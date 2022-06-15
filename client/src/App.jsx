@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { MantineProvider, ColorSchemeProvider } from '@mantine/core';
+import { NotificationsProvider } from '@mantine/notifications';
 import { useLocalStorage } from '@mantine/hooks';
 
 import globalStyles from './globalStyles';
@@ -58,12 +59,14 @@ function App() {
   return (
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider theme={theme} styles={globalStyles} withGlobalStyles withNormalizeCSS>
-        <Layout>
-          <Routes>
-            <Route path='home' element={<Home />} />
-            <Route path='auth' element={<Auth />} />
-          </Routes>
-        </Layout>
+        <NotificationsProvider>
+          <Layout>
+            <Routes>
+              <Route path='home' element={<Home />} />
+              <Route path='auth' element={<Auth />} />
+            </Routes>
+          </Layout>
+        </NotificationsProvider>
       </MantineProvider>
     </ColorSchemeProvider>
   );

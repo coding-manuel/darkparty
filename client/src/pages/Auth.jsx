@@ -1,9 +1,15 @@
 import React, {useEffect, useState} from 'react'
 import { z } from 'zod'
+import { X } from 'phosphor-react'
 import { Paper, Stack, Tabs, TextInput, Button, Box } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form'
+import { axios } from '../utils/axios'
+import { showNotification } from '@mantine/notifications';
+import { useNavigate } from 'react-router-dom';
+import { notificationStyles } from '../globalStyles';
 
 export default function Auth() {
+    const navigate = useNavigate()
 
     const [activeTab, setActiveTab] = useState(0);
 
@@ -37,12 +43,63 @@ export default function Auth() {
         }
     })
 
-    const handleSignin = (values) => {
-        console.log(values)
+    const handleSignUp = (values) => {
+        axios.post("/auth/register", {email: values.email, password: values.password, name: values.name, username: values.username})
+        .then(function (response){
+            setActiveTab(0)
+            let title = 'Try Signing In with your credentials'
+            showNotification({
+                title: title,
+                styles: notificationStyles
+            })
+        })
+        .catch(function (error){
+            if(error.response){
+                const status = error.response.status
+                let title, description
+                if(status === 409){
+                    title = 'User with this Email Address Already Exists'
+                    description = 'Maybe try signing in'
+                }
+                else if(status === 408){
+                    title = 'Username already taken'
+                    description = 'Trying being more creative'
+                }
+                showNotification({
+                    title: title,
+                    message: description,
+                    styles: notificationStyles
+                })
+
+            }
+        })
     }
 
-    const handleSignUp = (values) => {
-        console.log(values)
+    const handleSignIn = (values) => {
+        axios.post("/auth/login", {email: values.email, password: values.password})
+        .then(function (response){
+            navigate('/home')
+        })
+        .catch(function (error){
+            if(error.response){
+                const status = error.response.status
+                let title, description
+                if(status === 403){
+                    title = 'User Not Found'
+                    description = 'Check The Email Address Entered'
+                }
+                else if(status === 401){
+                    title = 'Wrong Password Entered'
+                    description = 'Check The Password Entered'
+                }
+                showNotification({
+                    title: title,
+                    message: description,
+                    styles: notificationStyles
+                  })
+
+            }
+        })
     }
 
     const onChange = (active, tabKey) => {
@@ -53,7 +110,7 @@ export default function Auth() {
         <Box sx={{width: "90%", maxWidth: '350px', margin: 'auto'}}>
             <Tabs active={activeTab} onTabChange={onChange} grow position='center' variant="pills">
                 <Tabs.Tab label="Sign In" tabKey="signIn">
-                    <form onSubmit={signInForm.onSubmit((values) => handleSignin(values))}>
+                    <form onSubmit={signInForm.onSubmit((values) => handleSignIn(values))}>
                         <Stack>
                             <TextInput
                                 label="EMAIL OR USERNAME"

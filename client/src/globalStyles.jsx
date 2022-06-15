@@ -38,4 +38,23 @@ const globalStyles = {
     })
 }
 
+export const notificationStyles = (theme) => ({
+    root: {
+        backgroundColor: `${theme.colorScheme === 'dark' ? theme.black : theme.white}`,
+        borderColor: theme.colors.orange[5],
+        paddingLeft: 12,
+
+        '::before': {
+            width: 0
+        }
+    },
+    title: { color: `${theme.colorScheme === 'dark' ? theme.white : theme.black}`, fontSize: 12, fontWeight: 600 },
+    description: { color: `${theme.colorScheme === 'dark' ? theme.white : theme.black}`, fontSize: 10 },
+    closeButton: {
+        color: `${theme.colorScheme === 'dark' ? theme.white : theme.black}`,
+        transition: '0.1s ease-out',
+        '&:hover': { backgroundColor: theme.colors.orange[4] },
+    },
+})
+
 export default globalStyles;

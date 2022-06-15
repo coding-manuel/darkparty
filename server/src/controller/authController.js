@@ -21,24 +21,24 @@ const registerUser = async (req, res) => {
                     res.status(409).json({success: false, message: 'User with this email already exists'})
                 }
                 else{
-                    pool.query(`INSERT INTO users (id, name, username, email, password) VALUES ($1, $2, $3, $4, $5)`, [uuidv4(), name, username, email, pwd], function(err, result) {
-                        if(err){
-                            console.log(err)
-                        }else{
-                            pool.query('COMMIT', err => {
-                                if (err) {
-                                    console.error('Error committing transaction', err.stack)
+                    pool.query(`SELECT id FROM users WHERE username=$1`, [username], function(err, result) {
+                        if(result.rowCount !== 0){
+                            res.status(408).json({success: false, message: 'User with this username already exists'})
+                        }
+                        else{
+                            pool.query(`INSERT INTO users (id, name, username, email, password) VALUES ($1, $2, $3, $4, $5)`, [uuidv4(), name, username, email, pwd], function(err, result) {
+                                if(err){
+                                    console.log(err)
+                                }else{
+                                    pool.query('COMMIT', err => {
+                                        if (err) {
+                                            console.error('Error committing transaction', err.stack)
+                                        }
+                                    })
+
+                                    res.status(200).json({success: true, message: 'User Created', session: req.session.user})
                                 }
                             })
-
-                            req.session.isAuth = true
-
-                            req.session.user = {
-                                id: id,
-                                username: username,
-                            }
-
-                            res.status(200).json({success: true, message: 'User Created', session: req.session.user})
                         }
                     })
                 }
@@ -54,13 +54,7 @@ const loginUser = async (req, res) => {
     const {username, email, password} = req.body
 
     try {
-        let data
-
-        if(username){
-            data = await pool.query(`SELECT password, username FROM users WHERE username = $1`, [username])
-        } else if(email){
-            data = await pool.query(`SELECT password, username FROM users WHERE email = $1`, [email])
-        }
+        let data = await pool.query(`SELECT password, username FROM users WHERE email = $1`, [email])
 
         if(data.rowCount === 0){
             res.status(403).json({success: false, message: 'User does not exist'})
@@ -70,10 +64,8 @@ const loginUser = async (req, res) => {
         const matches = bcrypt.compareSync(password, user.password)
 
         if(!matches)
-            res.status(403).json({success: false, message: 'Wrong Password'})
+            res.status(401).json({success: false, message: 'Wrong Password'})
         else{
-            req.session.isAuth = true
-
             req.session.user = {
                 id: user.id,
                 username: username,
