@@ -42,7 +42,7 @@ export default function Auth() {
     }
 
     const handleSignUp = (values) => {
-        console.log("signupo")
+        console.log(values)
     }
 
     const onChange = (active, tabKey) => {
@@ -62,10 +62,11 @@ export default function Auth() {
                             />
                             <TextInput
                                 label="PASSWORD"
+                                type='password'
                                 required
                                 {...signInForm.getInputProps('password')}
                             />
-                            <Button type='submit'>Log In</Button>
+                            <Button type='submit' mt={16}>Log In</Button>
                         </Stack>
                     </form>
                 </Tabs.Tab>
@@ -92,7 +93,7 @@ export default function Auth() {
                                 required
                                 {...signUpForm.getInputProps('password')}
                             />
-                            <Button type='submit'>Log In</Button>
+                            <Button type='submit' mt={16}>Sign Up</Button>
                         </Stack>
                     </form>
                 </Tabs.Tab>

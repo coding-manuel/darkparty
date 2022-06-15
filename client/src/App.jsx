@@ -19,9 +19,27 @@ function App() {
 
   const theme = {
     colorScheme: colorScheme,
-    primaryColor: 'red',
+    primaryColor: 'orange',
+    primaryShade: 5,
 
-    fontFamily: 'Azeret, sans-serif',
+    black: '#323232',
+
+    fontFamily: 'Azeret Mono, sans-serif',
+
+    colors: {
+      "orange": [
+        "#FFEDE5",
+        "#FFCEB8",
+        "#FFAF8A",
+        "#FF8F5C",
+        "#FF6F2E",
+        "#FF5000",
+        "#CC4000",
+        "#993000",
+        "#662000",
+        "#331000"
+    ]
+    },
 
     lineHeight: 1.3,
     headings: {
