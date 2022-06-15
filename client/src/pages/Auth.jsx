@@ -1,26 +1,44 @@
 import React, {useEffect, useState} from 'react'
+import { z } from 'zod'
 import { Paper, Stack, Tabs, TextInput, Button, Box } from '@mantine/core';
-import { useForm } from '@mantine/form'
+import { useForm, zodResolver } from '@mantine/form'
 
 export default function Auth() {
 
-    const [activeTab, setActiveTab] = useState(1);
+    const [activeTab, setActiveTab] = useState(0);
 
-    const form = activeTab === "signIn" ? useForm({
+    const signInSchema = z.object({
+        email: z.string().email({ message: 'Invalid email' }),
+        password: z.string().min(8, {message: 'Password should be atleast 8 characters'})
+    });
+
+    const signUpSchema = z.object({
+        name: z.string().min(4, {message: "Enter Valid Name"}),
+        username: z.string().min(4, {message: "Username should be atleast 4 characters"}),
+        email: z.string().email({ message: 'Invalid email' }),
+        password: z.string().min(8, {message: 'Password should be atleast 8 characters'})
+    });
+
+    const signInForm = useForm({
+        schema: zodResolver(signInSchema),
         initialValues: {
-            email : 0,
+            email : "",
             password: ""
         }
-    }) :
-    useForm({
+    })
+
+    const signUpForm = useForm({
+        schema: zodResolver(signUpSchema),
         initialValues: {
-            email : 0,
+            name: "",
+            username: "",
+            email : "",
             password: ""
         }
     })
 
     const handleSignin = (values) => {
-        console.log("login")
+        console.log(values)
     }
 
     const handleSignUp = (values) => {
@@ -35,34 +53,44 @@ export default function Auth() {
         <Box sx={{width: "90%", maxWidth: '350px', margin: 'auto'}}>
             <Tabs active={activeTab} onTabChange={onChange} grow position='center' variant="pills">
                 <Tabs.Tab label="Sign In" tabKey="signIn">
-                    <form style={{padding: '0 8px'}} onSubmit={form.onSubmit((values) => handleSignin(values))}>
+                    <form onSubmit={signInForm.onSubmit((values) => handleSignin(values))}>
                         <Stack>
                             <TextInput
                                 label="EMAIL OR USERNAME"
                                 required
-                                {...form.getInputProps('email')}
+                                {...signInForm.getInputProps('email')}
                             />
                             <TextInput
                                 label="PASSWORD"
                                 required
-                                {...form.getInputProps('password')}
+                                {...signInForm.getInputProps('password')}
                             />
                             <Button type='submit'>Log In</Button>
                         </Stack>
                     </form>
                 </Tabs.Tab>
                 <Tabs.Tab label="Sign Up" tabKey="signUp">
-                    <form style={{padding: '0 8px'}} onSubmit={form.onSubmit((values) => handleSignUp(values))}>
+                    <form onSubmit={signUpForm.onSubmit((values) => handleSignUp(values))}>
                         <Stack>
                             <TextInput
-                                label="EMAIL OR USERNAME"
+                                label="FULL NAME"
                                 required
-                                {...form.getInputProps('email')}
+                                {...signUpForm.getInputProps('name')}
+                            />
+                            <TextInput
+                                label="EMAIL"
+                                required
+                                {...signUpForm.getInputProps('email')}
+                            />
+                            <TextInput
+                                label="Username"
+                                required
+                                {...signUpForm.getInputProps('username')}
                             />
                             <TextInput
                                 label="PASSWORD"
                                 required
-                                {...form.getInputProps('password')}
+                                {...signUpForm.getInputProps('password')}
                             />
                             <Button type='submit'>Log In</Button>
                         </Stack>
