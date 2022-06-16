@@ -85,8 +85,19 @@ const loginUser = async (req, res) => {
     }
 };
 
+const logOut = async (req, res) => {
+    try {
+        await req.session.destroy()
+        return res.sendStatus(200)
+    } catch (e) {
+        console.error(e)
+        return res.sendStatus(500)
+    }
+}
+
 module.exports = {
     getUsers,
     registerUser,
-    loginUser
+    loginUser,
+    logOut
 }
