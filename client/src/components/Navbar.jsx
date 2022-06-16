@@ -2,6 +2,8 @@ import React, { useState, useContext, useEffect } from 'react';
 import { createStyles, Menu, Header, Container, Group, Avatar, useMantineColorScheme, Switch, ActionIcon, Text } from '@mantine/core';
 import LogoDark from '../assets/logo-dark.svg'
 import LogoLight from '../assets/logo-light.svg'
+import {SignOut} from "phosphor-react"
+import { AuthContext } from '../contexts/AuthContext';
 
 const HEADER_HEIGHT = 60;
 
@@ -44,6 +46,7 @@ const useStyles = createStyles((theme) => ({
 export default function Navbar() {
   const { classes, cx } = useStyles();
   const {colorScheme, toggleColorScheme} = useMantineColorScheme();
+  const {authed, signOut} = useContext(AuthContext);
 
   const [checked, setChecked] = useState(false);
 
@@ -70,6 +73,7 @@ export default function Navbar() {
           </ActionIcon>
           <Menu gutter={2} placement='end' closeOnItemClick={false} control={<ActionIcon variant='outline'><Avatar sx={{cursor: "pointer"}} size='sm' /></ActionIcon>} styles={{itemLabel: {width: '100%'}}}>
             {/* <Menu.Item component={Link} to={`/artist/${currentAccount}`} icon={<User size={16} weight="regular" />}>Your Profile</Menu.Item> */}
+            {authed && <Menu.Item onClick={signOut} icon={<SignOut size={16} />}><Text variant='xs'>Sign Out</Text></Menu.Item>}
             <Menu.Item ><Switch checked={checked} onChange={handleToggle} styles={{root:{flexDirection: 'row-reverse', justifyContent: 'space-between', width: '100%'}, label:{paddingLeft: 0, paddingRight: 8}}} label={<Text variant='xs'>Dark Mode</Text>} /></Menu.Item>
           </Menu>
         </Group>

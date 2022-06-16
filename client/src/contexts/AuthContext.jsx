@@ -72,8 +72,41 @@ export const AuthProvider = ({children}) => {
         })
     }
 
+    const signOut = () => {
+        axios.post("/auth/logout")
+        .then(function (response){
+            localStorage.setItem("authed", false)
+            setAuthed(false)
+            showNotification({
+                title: 'Succesfully Logged Out',
+                styles: notificationStyles
+            })
+            navigate('/auth')
+        })
+        .catch(function (error){
+            if(error.response){
+                const status = error.response.status
+                let title, description
+                if(status === 403){
+                    title = 'User Not Found'
+                    description = 'Check The Email Address or Username Entered'
+                }
+                else if(status === 401){
+                    title = 'Wrong Password Entered'
+                    description = 'Check The Password Entered'
+                }
+                showNotification({
+                    title: title,
+                    message: description,
+                    styles: notificationStyles
+                  })
+
+            }
+        })
+    }
+
     return(
-        <AuthContext.Provider value={{signIn, signUp, authed}}>
+        <AuthContext.Provider value={{signIn, signUp, signOut, authed}}>
             {children}
         </AuthContext.Provider>
     )
