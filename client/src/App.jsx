@@ -1,10 +1,11 @@
 import { useEffect, useState, useContext } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { MantineProvider, ColorSchemeProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import { useLocalStorage } from '@mantine/hooks';
 
 import globalStyles from './globalStyles';
+import { AuthContext, AuthProvider } from './contexts/AuthContext';
 
 import Home from './pages/Home';
 import Auth from './pages/Auth';
@@ -60,16 +61,23 @@ function App() {
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider theme={theme} styles={globalStyles} withGlobalStyles withNormalizeCSS>
         <NotificationsProvider>
-          <Layout>
-            <Routes>
-              <Route path='home' element={<Home />} />
-              <Route path='auth' element={<Auth />} />
-            </Routes>
-          </Layout>
+          <AuthProvider>
+            <Layout>
+              <Routes>
+                <Route path='/home' element={<RequireAuth><Home /></RequireAuth>} />
+                <Route path='/auth' element={<Auth />} />
+              </Routes>
+            </Layout>
+          </AuthProvider>
         </NotificationsProvider>
       </MantineProvider>
     </ColorSchemeProvider>
   );
+}
+
+function RequireAuth({ children }) {
+  const {authed} = useContext(AuthContext);
+  return authed ? children : <Navigate to='/auth' />;
 }
 
 export default App

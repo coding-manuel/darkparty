@@ -51,10 +51,12 @@ const registerUser = async (req, res) => {
 }
 
 const loginUser = async (req, res) => {
-    const {username, email, password} = req.body
+    const {email, password} = req.body
+
+    console.log(req.session)
 
     try {
-        let data = await pool.query(`SELECT password, username FROM users WHERE email = $1`, [email])
+        let data = await pool.query(`SELECT password, username FROM users WHERE (email = $1 OR username = $1)`, [email])
 
         if(data.rowCount === 0){
             res.status(403).json({success: false, message: 'User does not exist'})
@@ -66,9 +68,12 @@ const loginUser = async (req, res) => {
         if(!matches)
             res.status(401).json({success: false, message: 'Wrong Password'})
         else{
+
+            req.isAuth = true
+
             req.session.user = {
                 id: user.id,
-                username: username,
+                username: user.username,
             }
 
             res.json({success: true, message: 'Logged In'})

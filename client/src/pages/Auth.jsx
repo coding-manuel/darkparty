@@ -1,20 +1,17 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useContext} from 'react'
 import { z } from 'zod'
 import { X } from 'phosphor-react'
 import { Paper, Stack, Tabs, TextInput, Button, Box } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form'
-import { axios } from '../utils/axios'
-import { showNotification } from '@mantine/notifications';
-import { useNavigate } from 'react-router-dom';
-import { notificationStyles } from '../globalStyles';
+import { AuthContext } from '../contexts/AuthContext';
 
 export default function Auth() {
-    const navigate = useNavigate()
+    const { signIn, signUp } = useContext(AuthContext);
 
     const [activeTab, setActiveTab] = useState(0);
 
     const signInSchema = z.object({
-        email: z.string().email({ message: 'Invalid email' }),
+        email: z.string(),
         password: z.string().min(8, {message: 'Password should be atleast 8 characters'})
     });
 
@@ -44,62 +41,11 @@ export default function Auth() {
     })
 
     const handleSignUp = (values) => {
-        axios.post("/auth/register", {email: values.email, password: values.password, name: values.name, username: values.username})
-        .then(function (response){
-            setActiveTab(0)
-            let title = 'Try Signing In with your credentials'
-            showNotification({
-                title: title,
-                styles: notificationStyles
-            })
-        })
-        .catch(function (error){
-            if(error.response){
-                const status = error.response.status
-                let title, description
-                if(status === 409){
-                    title = 'User with this Email Address Already Exists'
-                    description = 'Maybe try signing in'
-                }
-                else if(status === 408){
-                    title = 'Username already taken'
-                    description = 'Trying being more creative'
-                }
-                showNotification({
-                    title: title,
-                    message: description,
-                    styles: notificationStyles
-                })
-
-            }
-        })
+        signUp(values)
     }
 
     const handleSignIn = (values) => {
-        axios.post("/auth/login", {email: values.email, password: values.password})
-        .then(function (response){
-            navigate('/home')
-        })
-        .catch(function (error){
-            if(error.response){
-                const status = error.response.status
-                let title, description
-                if(status === 403){
-                    title = 'User Not Found'
-                    description = 'Check The Email Address Entered'
-                }
-                else if(status === 401){
-                    title = 'Wrong Password Entered'
-                    description = 'Check The Password Entered'
-                }
-                showNotification({
-                    title: title,
-                    message: description,
-                    styles: notificationStyles
-                  })
-
-            }
-        })
+        signIn(values)
     }
 
     const onChange = (active, tabKey) => {
