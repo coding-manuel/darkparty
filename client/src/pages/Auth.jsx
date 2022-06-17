@@ -4,9 +4,11 @@ import { X } from 'phosphor-react'
 import { Paper, Stack, Tabs, TextInput, Button, Box } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form'
 import { AuthContext } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Auth() {
-    const { signIn, signUp } = useContext(AuthContext);
+    const { signIn, signUp, authed, loading } = useContext(AuthContext);
+    const navigate = useNavigate()
 
     const [activeTab, setActiveTab] = useState(0);
 
@@ -48,6 +50,10 @@ export default function Auth() {
         signIn(values)
     }
 
+    const handleOpenAppClick = (values) => {
+        navigate("/home")
+    }
+
     const onChange = (active, tabKey) => {
         setActiveTab(active);
     };
@@ -69,7 +75,7 @@ export default function Auth() {
                                 required
                                 {...signInForm.getInputProps('password')}
                             />
-                            <Button type='submit' mt={16}>Log In</Button>
+                            {!authed && <Button loading={loading} type='submit' mt={16}>Log In</Button>}
                         </Stack>
                     </form>
                 </Tabs.Tab>
@@ -96,11 +102,12 @@ export default function Auth() {
                                 required
                                 {...signUpForm.getInputProps('password')}
                             />
-                            <Button type='submit' mt={16}>Sign Up</Button>
+                            {!authed && <Button loading={loading} type='submit' mt={16}>Sign Up</Button>}
                         </Stack>
                     </form>
                 </Tabs.Tab>
-                </Tabs>
+            </Tabs>
+            {authed && <Button mt={16} fullWidth onClick={handleOpenAppClick}>Open App</Button>}
         </Box>
     )
 }
