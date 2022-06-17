@@ -6,8 +6,9 @@ const globalStyles = {
     Header: (theme) => ({
         root: { borderBottom: `1px solid ${theme.colorScheme === 'dark' ? theme.white : theme.black}`}
     }),
-    ActionIcon: () => ({
-        root: { width: '32px', height: '32px', padding: '5px'},
+
+    ActionIcon: (theme) => ({
+        root: { width: '32px', height: '32px', padding: '5px', color: `${theme.colorScheme === 'dark' ? theme.white : theme.black}`, border: `1px solid ${theme.colorScheme === 'dark' ? theme.white : theme.black}`, '&:hover': { color: theme.white, background: `${theme.colors.orange[5]}` }},
     }),
 
     Avatar: () => ({
