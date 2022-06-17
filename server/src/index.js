@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 
 const authRoutes = require("./routes/authRoutes");
+const movieRoutes = require("./routes/movieRoutes");
 const pool = require('./utils/db');
 
 //! Config
@@ -51,6 +52,7 @@ app.use(
 //! Routes
 
 app.use("/api/auth", authRoutes)
+app.use("/api/movie", movieRoutes)
 
 app.get('/', (request, response) => {
     response.json({ info: 'Node.js, Express, and Postgres API' })
