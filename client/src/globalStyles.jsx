@@ -30,8 +30,8 @@ const globalStyles = {
 
     TextInput: (theme) => ({
         label: { fontWeight: 600 },
-        filledVariant: { border: `1px solid ${theme.colorScheme === 'dark' ? '#8e8e8e' : '#bbbbbb'}`, transition: '.1s ease-in' },
-        defaultVariant: { border: `1px solid ${theme.colorScheme === 'dark' ? '#8e8e8e' : '#bbbbbb'}`, transition: '.1s ease-in' },
+        filledVariant: { border: `1px solid ${theme.colorScheme === 'dark' ? '#8e8e8e' : '#bbbbbb'}`, background: `${theme.colors.dark[6]}!important`, '&:hover, &:focus': {background: `${theme.colors.dark[5]}!important`}, transition: '.1s ease-in' },
+        defaultVariant: { border: `1px solid ${theme.colorScheme === 'dark' ? '#8e8e8e' : '#bbbbbb'}`, background: `${theme.colors.gray[0]}!important`, '&:hover, &:focus': {background: `${theme.colors.gray[1]}!important`}, transition: '.1s ease-in' },
         error: { fontSize: 12 }
     }),
 
