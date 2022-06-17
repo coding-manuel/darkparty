@@ -15,8 +15,9 @@ const globalStyles = {
     }),
 
     Menu : (theme) => ({
-        body: { border: `1px solid ${theme.colorScheme === 'dark' ? theme.white : theme.black}`, padding: 0},
-        item: { padding: '6px 8px' }
+        body: { padding: 0, background: 'transparent', border: 'none', boxShadow: 'none'},
+        item: { padding: '6px 8px', background: theme.colorScheme !== 'dark' ? theme.colors.gray[0] : theme.colors.dark[6], border: `1px solid ${theme.colorScheme === 'dark' ? theme.white : theme.black}`, margin: '2px 0'},
+        itemHovered: {backgroundColor: `${theme.colorScheme !== 'dark' ? theme.colors.orange[3] : theme.colors.dark[5]}!important`}
     }),
 
     Tabs : (theme) => ({
