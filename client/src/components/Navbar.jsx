@@ -4,6 +4,7 @@ import LogoDark from '../assets/logo-dark.svg'
 import LogoLight from '../assets/logo-light.svg'
 import { SignOut, Plus, User } from "phosphor-react"
 import { AuthContext } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const HEADER_HEIGHT = 60;
 
@@ -47,6 +48,7 @@ export default function Navbar() {
   const { classes, cx } = useStyles();
   const {colorScheme, toggleColorScheme} = useMantineColorScheme();
   const {authed, signOut} = useContext(AuthContext);
+  const navigate = useNavigate()
 
   const [checked, setChecked] = useState(false);
 
@@ -66,7 +68,7 @@ export default function Navbar() {
       <Container size='xl' className={classes.header}>
         <img onClick={handleLogoClick} style={{height: 25, cursor: "pointer"}} src={colorScheme === 'dark' ? LogoLight : LogoDark} alt="" />
         <Group spacing={24}>
-          <ActionIcon variant='outline'>
+          <ActionIcon onClick={() => navigate("/upload")} variant='outline'>
             <Plus size={18} />
           </ActionIcon>
           <Menu gutter={2} placement='end' closeOnItemClick={false} control={<ActionIcon variant='outline'><User size={32} /></ActionIcon>} styles={{itemLabel: {width: '100%'}}}>

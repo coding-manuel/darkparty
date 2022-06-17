@@ -9,6 +9,7 @@ import { AuthContext, AuthProvider } from './contexts/AuthContext';
 
 import Home from './pages/Home';
 import Auth from './pages/Auth';
+import Upload from './pages/Upload';
 import Layout from './Layout';
 
 function App() {
@@ -65,6 +66,7 @@ function App() {
             <Layout>
               <Routes>
                 <Route path='/home' element={<RequireAuth><Home /></RequireAuth>} />
+                <Route path='/upload' element={<RequireAuth><Upload /></RequireAuth>} />
                 <Route path='/auth' element={<Auth />} />
               </Routes>
             </Layout>
