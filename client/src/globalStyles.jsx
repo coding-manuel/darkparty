@@ -43,7 +43,8 @@ const globalStyles = {
 export const notificationStyles = (theme) => ({
     root: {
         backgroundColor: `${theme.colorScheme === 'dark' ? theme.black : theme.white}`,
-        borderColor: theme.colors.orange[5],
+        borderColor: theme.colors.orange[4],
+        borderWidth: 2,
         paddingLeft: 12,
 
         '::before': {

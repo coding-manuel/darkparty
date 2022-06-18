@@ -1,6 +1,5 @@
 import React, {useEffect, useState, useContext} from 'react'
 import { z } from 'zod'
-import { X } from 'phosphor-react'
 import { Paper, Stack, Tabs, TextInput, Button, Box } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form'
 import { AuthContext } from '../contexts/AuthContext';
