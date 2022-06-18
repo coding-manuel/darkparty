@@ -1,10 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const {  } = require("../controller/movieController");
+const { generateUrl } = require("../controller/movieController");
 
-router.post("/upload", (req, res) => {
-    res.send("less go")
-})
+router.post("/generateUrl", generateUrl)
 
 module.exports = router;
