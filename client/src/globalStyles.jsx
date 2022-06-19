@@ -40,7 +40,7 @@ const globalStyles = {
     }),
 
     Dropzone : (theme) => ({
-        root: { padding: 0, color: theme.white, borderStyle: 'solid'}
+        root: { padding: 0, borderStyle: 'solid'}
     })
 }
 
