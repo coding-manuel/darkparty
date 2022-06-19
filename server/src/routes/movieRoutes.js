@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
-const { generateUrl, initializeMultipartUpload, finalizeMultipartUpload, getMultipartPreSignedUrls, uploadMovieDetails } = require("../controller/movieController");
+const { getAllMovies, getMovie, generateUrl, initializeMultipartUpload, finalizeMultipartUpload, getMultipartPreSignedUrls, uploadMovieDetails } = require("../controller/movieController");
+
+router.get("/getallmovie", getAllMovies)
+router.get("/getmovie", getMovie)
 
 router.post("/uploadmoviedetails", uploadMovieDetails)
 router.post("/generateurl", generateUrl)

@@ -113,19 +113,25 @@ export const AuthProvider = ({children}) => {
         })
     }
 
-    useEffect(() => {
+    const isAuth = () => {
         axios.get("/auth/isauthed")
         .then(res => {
             setAuthed(true)
+            return true
         })
         .catch(err => {
             localStorage.setItem("authed", false)
             setAuthed(false)
+            return false
         })
+    }
+
+    useEffect(() => {
+        isAuth()
     }, []);
 
     return(
-        <AuthContext.Provider value={{signIn, signUp, signOut, authed, loading}}>
+        <AuthContext.Provider value={{signIn, signUp, signOut, authed, isAuth, loading}}>
             {children}
         </AuthContext.Provider>
     )

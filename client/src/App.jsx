@@ -78,7 +78,8 @@ function App() {
 }
 
 function RequireAuth({ children }) {
-  const {authed} = useContext(AuthContext);
+  const {isAuth, authed} = useContext(AuthContext);
+  isAuth()
   return authed ? children : <Navigate to='/auth' />;
 }
 

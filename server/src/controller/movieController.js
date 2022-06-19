@@ -17,6 +17,18 @@ const s3 = new AWS.S3({
     secretAccessKey,
 })
 
+const getAllMovies = (req, res) => {
+    pool.query(`SELECT * FROM movies`, function (err, result){
+        res.json(result.rows)
+    })
+}
+
+const getMovie = (req, res) => {
+    pool.query(`SELECT * FROM movies`, function (err, result){
+        res.json(result.rows)
+    })
+}
+
 const generateUrl = async (req, res) => {
     const params = ({
         Bucket: S3_BUCKET,
@@ -113,6 +125,8 @@ const uploadMovieDetails = async (req, res) => {
 }
 
 module.exports = {
+    getAllMovies,
+    getMovie,
     generateUrl,
     initializeMultipartUpload,
     getMultipartPreSignedUrls,
