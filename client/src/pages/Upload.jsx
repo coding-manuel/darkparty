@@ -1,29 +1,72 @@
-import React, { useState } from 'react'
-import { Stack, Group, Text, TextInput, Button } from '@mantine/core'
+import React, { useState, useEffect } from 'react'
+import { Stack, Group, Text, TextInput, Button, AspectRatio, useMantineTheme } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
-import { Dropzone, MIME_TYPES } from '@mantine/dropzone';
+import { Dropzone, MIME_TYPES, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { z } from 'zod'
 import { showNotification } from '@mantine/notifications';
 import { notificationStyles } from '../globalStyles';
+import { axios } from '../utils/axios'
 
-export const dropzoneChildren = (movieFile) => (
+const processImage = (item, type) => {
+    var id = item[0].name.replaceAll(" ", '') + Math.random().toString(16).slice(2)
+    var file = item[0];
+    var blob = file.slice(0, file.size);
+    const newFile = new File([blob], id, {type: type});
+
+    return { id: id, file: newFile}
+}
+
+export const dropzoneChildren = (movieFile, theme) => {
+
+    return (
     movieFile === null ?
-        <Group position="center" spacing="sm" style={{ minHeight: 60, pointerEvents: 'none' }}>
+        <Group position="center" spacing="sm" p={0} style={{ minHeight: 60, pointerEvents: 'none' }}>
             <Text size="md" inline>
                 Drag and drop movie file to upload
             </Text>
         </Group>
         :
-        <Group spacing="sm" style={{ minHeight: 60, pointerEvents: 'none' }}>
+        <Group spacing="sm" style={{ padding: 16, minHeight: 60, pointerEvents: 'none' }}>
             <Text size="md" inline>
                 File Selected: {movieFile[0].name.slice(0, -4)}
             </Text>
         </Group>
+    )
+};
 
-);
+export const dropzonePosterChildren = (moviePoster, theme) => {
+
+    const [posterSrc, setPosterSrc] = useState('');
+
+    useEffect(() => {
+        if(moviePoster !== null){
+            let fr = new FileReader();
+            fr.onload = () => {
+                console.log(fr.result)
+                setPosterSrc(fr.result)
+            }
+            fr.readAsDataURL(moviePoster[0])
+        }
+    }, [moviePoster]);
+
+    return (
+    moviePoster === null ?
+        <Group position="center" spacing="sm" p={0} style={{ padding: 16, pointerEvents: 'none' }}>
+            <Text size="md" inline>
+                Upload movie poster
+            </Text>
+        </Group>
+        :
+        <Group spacing="sm" style={{ minHeight: 60, pointerEvents: 'none' }}>
+            <img src={posterSrc} alt="" style={{height: 'auto', width: '100%', objectFit: 'cover'}} />
+        </Group>
+    )
+};
 
 export default function Upload() {
     const [movieFile, setMovieFile] = useState(null);
+    const [moviePoster, setMoviePoster] = useState(null);
+    const theme = useMantineTheme()
 
     const movieSchema = z.object({
         title: z.string(),
@@ -39,33 +82,49 @@ export default function Upload() {
     })
 
     const handleUpload = async (values) => {
-        var id = movieFile[0].name.replaceAll(" ", '') + Math.random().toString(16).slice(2)
-        var file = movieFile[0];
-        var blob = file.slice(0, file.size);
-        const newMovieFile = new File([blob], id, {type: 'video/mp4'});
+        const newPosterFile = processImage(moviePoster, moviePoster[0].type)
+        const newMovieFile = processImage(movieFile, 'video/mp4')
 
-        axios.post("/movie/generateUrl", {filename: movieFile[0].name, filetype: movieFile[0].type})
-        .then(function(res){
-            fetch(res.data.message, {
-                method: 'PUT',
-                body: newMovieFile[0]
-            })
-            .then((response) => {
-                const fileUrl = `d15jncv4xxvixg.cloudfront.net${id}`
-                console.log(fileUrl)
-            })
-        })
+        const posterUrl = `d15jncv4xxvixg.cloudfront.net${newPosterFile.id}`
+        const movieUrl = `d15jncv4xxvixg.cloudfront.net${newMovieFile.id}`
+
+        // axios.post("/movie/generateUrl", {filename: newMovieFile.file.name})
+        // .then(function(res){
+        //     fetch(res.data.message, {
+        //         method: 'PUT',
+        //         body: newMovieFile.file
+        //     })
+        // })
+
+        // axios.post("/movie/generateUrl", {filename: newPosterFile.file.name})
+        // .then(function(res){
+        //     fetch(res.data.message, {
+        //         method: 'PUT',
+        //         body: newPosterFile.file
+        //     })
+        // })
+
+        values = {...values, poster: posterUrl, movie: movieUrl}
     }
 
     return (
         <Stack>
+            <AspectRatio ratio={1600 / 2400} sx={{ width: 180 }} mx="auto">
+                <Dropzone
+                    onDrop={(files) => setMoviePoster(files)}
+                    onReject={(files) => showNotification({title: 'File not Valid', styles: notificationStyles})}
+                    accept={IMAGE_MIME_TYPE}
+                    >
+                    {() => dropzonePosterChildren(moviePoster, theme)}
+                </Dropzone>
+            </AspectRatio>
             <Dropzone
                 onDrop={(files) => setMovieFile(files)}
+                styles={{root: {backgroundColor: movieFile !== null && theme.colors.orange[5]}}}
                 onReject={(files) => showNotification({title: 'File not Valid', styles: notificationStyles})}
-                maxSize={3 * 1024 ** 2}
                 accept={MIME_TYPES.mp4}
                 >
-                {() => dropzoneChildren(movieFile)}
+                {() => dropzoneChildren(movieFile, theme)}
             </Dropzone>
             <form onSubmit={form.onSubmit((values) => handleUpload(values))}>
                 <Stack>
