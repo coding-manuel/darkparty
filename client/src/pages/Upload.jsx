@@ -3,15 +3,22 @@ import { Stack, Group, Text, TextInput, Button, AspectRatio, useMantineTheme, Pr
 import { useForm, zodResolver } from '@mantine/form'
 import { Dropzone, MIME_TYPES, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { z } from 'zod'
+import { useNavigate } from 'react-router-dom';
 import { showNotification } from '@mantine/notifications';
 import { notificationStyles } from '../globalStyles';
 import { axios, freeAxios } from '../utils/axios'
 import { Uploader } from '../utils/multipartUploader'
 
+const uid = () => {
+    return Date.now().toString(36) + Math.random().toString(36);
+};
+
 const processImage = (item, type) => {
-    var id = item[0].name.replaceAll(" ", '') + Math.random().toString(16).slice(2)
-    var file = item[0];
-    var blob = file.slice(0, file.size);
+    let name = item[0].name.replace(/[^a-zA-Z0-9.]+/g, '')
+    let id = uid() + name.slice(-4)
+    console.log(id)
+    let file = item[0];
+    let blob = file.slice(0, file.size);
     const newFile = new File([blob], id, {type: type});
 
     return { id: id, file: newFile}
@@ -71,6 +78,7 @@ export default function Upload() {
     const [uploader, setUploader] = useState(undefined)
     const [percentage, setPercentage] = useState(undefined);
 
+    const navigate = useNavigate()
     const theme = useMantineTheme()
 
     const movieSchema = z.object({
@@ -90,18 +98,18 @@ export default function Upload() {
         const newPosterFile = processImage(moviePoster, moviePoster[0].type)
         const newMovieFile = processImage(movieFile, 'video/mp4')
 
-        const posterUrl = `d15jncv4xxvixg.cloudfront.net${newPosterFile.id}`
-        const movieUrl = `d15jncv4xxvixg.cloudfront.net${newMovieFile.id}`
+        const posterUrl = `https://d15jncv4xxvixg.cloudfront.net/${newPosterFile.id}`
+        const movieUrl = `https://d15jncv4xxvixg.cloudfront.net/${newMovieFile.id}`
 
         setLoading(true)
 
-        axios.post("/movie/generateUrl", {filename: newPosterFile.file.name})
+        axios.post("/movie/generateUrl", {filename: newPosterFile.id})
         .then(function(res){
             freeAxios.put(res.data.message, newPosterFile.file)
         })
 
         const videoUploaderOptions = {
-            fileName: newMovieFile.file.name,
+            fileName: newMovieFile.id,
             file: newMovieFile.file,
         }
 
@@ -136,7 +144,10 @@ export default function Upload() {
 
     useEffect(() => {
         if(percentage === 100){
-            setLoading(false)
+            axios.post("/movie/uploadmoviedetails", movieDetails)
+            .then(res => {
+                navigate("/home")
+            })
         }
     }, [percentage]);
 

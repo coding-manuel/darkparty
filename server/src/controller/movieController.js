@@ -1,5 +1,6 @@
 //* For the multipart explanation: https://blog.logrocket.com/multipart-uploads-s3-node-js-react/
 const AWS = require('aws-sdk');
+const { v4: uuidv4 } = require('uuid');
 const pool = require('../utils/db');
 var _ = require('lodash');
 
@@ -95,13 +96,20 @@ const uploadMovieDetails = async (req, res) => {
     const {director, title, movie, poster} = req.body
     const { id } = req.session
 
-    pool.query(`INSERT INTO (title, director, id, created, movieurl, posterurl, user_id) movies VALUES( $1, $2, $3, $4, $5, $6))`, [title, director, movie_id, Date.now(), movie, poster, id], function(err, result) {
-        if(err){
-            console.log(err)
-        }
-        res.status(200)
-    })
+    pool.query('BEGIN', err => {
+        pool.query(`INSERT INTO movies (title, director, id, movieurl, posterurl, user_id) VALUES( $1, $2, $3, $4, $5, $6)`, [title, director, uuidv4(), movie, poster, id], function(err, result) {
+            if(err){
+                console.log(err)
+            }
+            pool.query('COMMIT', err => {
+                if (err) {
+                    console.error('Error committing transaction', err.stack)
+                }
+            })
 
+            res.status(200).json({success: true, message: 'Movie Added'})
+            })
+    })
 }
 
 module.exports = {
