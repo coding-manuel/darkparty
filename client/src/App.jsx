@@ -11,6 +11,7 @@ import Home from './pages/Home';
 import Auth from './pages/Auth';
 import Upload from './pages/Upload';
 import Layout from './Layout';
+import Movie from './pages/Movie';
 
 function App() {
   const [colorScheme, setColorScheme] = useLocalStorage({
@@ -67,6 +68,7 @@ function App() {
               <Routes>
                 <Route path='/home' element={<RequireAuth><Home /></RequireAuth>} />
                 <Route path='/upload' element={<RequireAuth><Upload /></RequireAuth>} />
+                <Route path='/movie/:id' element={<RequireAuth><Movie /></RequireAuth>} />
                 <Route path='/auth' element={<Auth />} />
               </Routes>
             </Layout>

@@ -24,7 +24,9 @@ const getAllMovies = (req, res) => {
 }
 
 const getMovie = (req, res) => {
-    pool.query(`SELECT * FROM movies`, function (err, result){
+    const { movieID } = req.body
+
+    pool.query(`SELECT * FROM movies WHERE id = $1`, [movieID], function (err, result){
         res.json(result.rows)
     })
 }
