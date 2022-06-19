@@ -18,13 +18,16 @@ export default function Layout({ children }) {
         main: {
           background: theme.colorScheme === 'dark' ? theme.colors.dark[8] : theme.colors.gray[0],
           padding: '20px',
+          minHeight: 'initial'
         },
+        body: {
+          minHeight: '92vh'
+        }
       }}
       fixed
-      footer={<Footer />}
       header={<Navbar />}
     >
-      <Container size='xl' pb={100} >
+      <Container size='xl'>
         {children}
       </Container>
     </AppShell>

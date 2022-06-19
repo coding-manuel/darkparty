@@ -70,6 +70,7 @@ function App() {
                 <Route path='/upload' element={<RequireAuth><Upload /></RequireAuth>} />
                 <Route path='/movie/:id' element={<RequireAuth><Movie /></RequireAuth>} />
                 <Route path='/auth' element={<Auth />} />
+                <Route path='*' element={<Navigate to='/home' />} />
               </Routes>
             </Layout>
           </AuthProvider>
