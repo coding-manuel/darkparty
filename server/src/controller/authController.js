@@ -2,6 +2,13 @@ const pool = require('../utils/db');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 
+const isAuthed = function (req, res) {
+    if(!req.session.isAuth){
+        res.status(401)
+    }
+    res.status(200)
+}
+
 const getUsers = (request, response) => {
     pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
         if (error) {
@@ -69,7 +76,7 @@ const loginUser = async (req, res) => {
             res.status(401).json({success: false, message: 'Wrong Password'})
         else{
 
-            req.isAuth = true
+            req.session.isAuth = true
 
             req.session.user = {
                 id: user.id,
@@ -96,6 +103,7 @@ const logOut = async (req, res) => {
 }
 
 module.exports = {
+    isAuthed,
     getUsers,
     registerUser,
     loginUser,

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { axios } from "../utils/axios"
 import { notificationStyles } from '../globalStyles';
 import { useNavigate } from 'react-router-dom';
@@ -112,6 +112,17 @@ export const AuthProvider = ({children}) => {
             }
         })
     }
+
+    useEffect(() => {
+        axios.get("/auth/isauthed")
+        .then(res => {
+            setAuthed(true)
+        })
+        .catch(err => {
+            localStorage.setItem("authed", false)
+            setAuthed(false)
+        })
+    }, []);
 
     return(
         <AuthContext.Provider value={{signIn, signUp, signOut, authed, loading}}>
