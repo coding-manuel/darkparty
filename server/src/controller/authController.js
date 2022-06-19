@@ -63,7 +63,7 @@ const loginUser = async (req, res) => {
     console.log(req.session)
 
     try {
-        let data = await pool.query(`SELECT password, username FROM users WHERE (email = $1 OR username = $1)`, [email])
+        let data = await pool.query(`SELECT id, password, username FROM users WHERE (email = $1 OR username = $1)`, [email])
 
         if(data.rowCount === 0){
             res.status(403).json({success: false, message: 'User does not exist'})

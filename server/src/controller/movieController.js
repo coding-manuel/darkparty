@@ -1,5 +1,6 @@
 //* For the multipart explanation: https://blog.logrocket.com/multipart-uploads-s3-node-js-react/
 const AWS = require('aws-sdk');
+const pool = require('../utils/db');
 var _ = require('lodash');
 
 require('dotenv').config()
@@ -90,9 +91,23 @@ async function finalizeMultipartUpload(req, res) {
     res.send(completeMultipartUploadOutput.Location)
 }
 
+const uploadMovieDetails = async (req, res) => {
+    const {director, title, movie, poster} = req.body
+    const { id } = req.session
+
+    pool.query(`INSERT INTO (title, director, id, created, movieurl, posterurl, user_id) movies VALUES( $1, $2, $3, $4, $5, $6))`, [title, director, movie_id, Date.now(), movie, poster, id], function(err, result) {
+        if(err){
+            console.log(err)
+        }
+        res.status(200)
+    })
+
+}
+
 module.exports = {
     generateUrl,
     initializeMultipartUpload,
     getMultipartPreSignedUrls,
-    finalizeMultipartUpload
+    finalizeMultipartUpload,
+    uploadMovieDetails
 }

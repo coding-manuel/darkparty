@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-const { generateUrl, initializeMultipartUpload, finalizeMultipartUpload, getMultipartPreSignedUrls } = require("../controller/movieController");
+const { generateUrl, initializeMultipartUpload, finalizeMultipartUpload, getMultipartPreSignedUrls, uploadMovieDetails } = require("../controller/movieController");
 
-router.post("/generateUrl", generateUrl)
-router.post("/initializeMultipartUpload", initializeMultipartUpload)
-router.post("/getMultipartPreSignedUrls", getMultipartPreSignedUrls)
-router.post("/finalizeMultipartUpload", finalizeMultipartUpload)
+router.post("/uploadmoviedetails", uploadMovieDetails)
+router.post("/generateurl", generateUrl)
+router.post("/initializemultipartupload", initializeMultipartUpload)
+router.post("/getmultipartpresignedUrls", getMultipartPreSignedUrls)
+router.post("/finalizemultipartupload", finalizeMultipartUpload)
 
 module.exports = router;
