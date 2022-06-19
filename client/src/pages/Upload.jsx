@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Stack, Group, Text, TextInput, Button, AspectRatio, useMantineTheme } from '@mantine/core'
+import { Stack, Group, Text, TextInput, Button, AspectRatio, useMantineTheme, Progress } from '@mantine/core'
 import { useForm, zodResolver } from '@mantine/form'
 import { Dropzone, MIME_TYPES, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { z } from 'zod'
@@ -43,7 +43,6 @@ export const dropzonePosterChildren = (moviePoster, theme) => {
         if(moviePoster !== null){
             let fr = new FileReader();
             fr.onload = () => {
-                console.log(fr.result)
                 setPosterSrc(fr.result)
             }
             fr.readAsDataURL(moviePoster[0])
@@ -67,9 +66,10 @@ export const dropzonePosterChildren = (moviePoster, theme) => {
 export default function Upload() {
     const [movieFile, setMovieFile] = useState(null);
     const [moviePoster, setMoviePoster] = useState(null);
+    const [movieDetails, setMovieDetails] = useState({});
     const [loading, setLoading] = useState(false);
-    const [loadingStatus, setLoadingStatus] = useState(null);
     const [uploader, setUploader] = useState(undefined)
+    const [percentage, setPercentage] = useState(undefined);
 
     const theme = useMantineTheme()
 
@@ -94,16 +94,11 @@ export default function Upload() {
         const movieUrl = `d15jncv4xxvixg.cloudfront.net${newMovieFile.id}`
 
         setLoading(true)
-        setLoadingStatus("Uploading Movie Poster")
 
         axios.post("/movie/generateUrl", {filename: newPosterFile.file.name})
         .then(function(res){
             freeAxios.put(res.data.message, newPosterFile.file)
         })
-
-        setLoadingStatus("Uploading Movie")
-
-        let percentage = undefined
 
         const videoUploaderOptions = {
             fileName: newMovieFile.file.name,
@@ -117,8 +112,7 @@ export default function Upload() {
             .onProgress(({ percentage: newPercentage }) => {
             // to avoid the same percentage to be logged twice
             if (newPercentage !== percentage) {
-                percentage = newPercentage
-                console.log(`${percentage}%`)
+                setPercentage(newPercentage)
             }
             })
             .onError((error) => {
@@ -127,17 +121,24 @@ export default function Upload() {
 
         uploader.start()
 
-        // axios.post("/movie/generateUrl", {filename: newMovieFile.file.name})
-        // .then(function(res){
-        //     freeAxios.put(res.data.message, newMovieFile.file)
-        // })
-
         values = {...values, poster: posterUrl, movie: movieUrl}
 
-        setLoading(false)
-        setLoadingStatus(null)
+        setMovieDetails(values)
 
     }
+
+    const handleCancel = () => {
+        if (uploader) {
+            setLoading(false)
+            uploader.abort()
+        }
+    }
+
+    useEffect(() => {
+        if(percentage === 100){
+            setLoading(false)
+        }
+    }, [percentage]);
 
     return (
         <Stack>
@@ -146,6 +147,8 @@ export default function Upload() {
                     onDrop={(files) => setMoviePoster(files)}
                     onReject={(files) => showNotification({title: 'File not Valid', styles: notificationStyles})}
                     accept={IMAGE_MIME_TYPE}
+                    disabled={loading}
+
                     >
                     {() => dropzonePosterChildren(moviePoster, theme)}
                 </Dropzone>
@@ -155,6 +158,7 @@ export default function Upload() {
                 styles={{root: {backgroundColor: movieFile !== null && theme.colors.orange[5]}}}
                 onReject={(files) => showNotification({title: 'File not Valid', styles: notificationStyles})}
                 accept={MIME_TYPES.mp4}
+                disabled={loading}
                 >
                 {() => dropzoneChildren(movieFile, theme)}
             </Dropzone>
@@ -163,17 +167,20 @@ export default function Upload() {
                     <TextInput
                         label="MOVIE TITLE"
                         required
+                        disabled={loading}
                         {...form.getInputProps('title')}
                     />
                     <TextInput
                         label="DIRECTOR"
                         required
+                        disabled={loading}
                         {...form.getInputProps('director')}
                     />
-                    <Button type='submit' loading={loading}>Submt</Button>
-                    {loadingStatus !== null && <Text align='center' size='xs'>{loadingStatus}</Text>}
+                    <Button type='submit' loading={loading}>Upload</Button>
+                    {loading && <Progress size="sm" value={percentage} animate />}
                 </Stack>
             </form>
+            {loading && <Button type='reset' onClick={handleCancel} sx={{backgroundColor: theme.colors.red[9], "&:hover": {backgroundColor: `${theme.colors.red[8]}!important`}}}>Cancel Upload</Button>}
         </Stack>
     )
 }
