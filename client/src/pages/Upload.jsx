@@ -5,7 +5,7 @@ import { Dropzone, MIME_TYPES, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { z } from 'zod'
 import { showNotification } from '@mantine/notifications';
 import { notificationStyles } from '../globalStyles';
-import { axios } from '../utils/axios'
+import { axios, freeAxios } from '../utils/axios'
 
 const processImage = (item, type) => {
     var id = item[0].name.replaceAll(" ", '') + Math.random().toString(16).slice(2)
@@ -66,6 +66,9 @@ export const dropzonePosterChildren = (moviePoster, theme) => {
 export default function Upload() {
     const [movieFile, setMovieFile] = useState(null);
     const [moviePoster, setMoviePoster] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [loadingStatus, setLoadingStatus] = useState(null);
+
     const theme = useMantineTheme()
 
     const movieSchema = z.object({
@@ -88,23 +91,26 @@ export default function Upload() {
         const posterUrl = `d15jncv4xxvixg.cloudfront.net${newPosterFile.id}`
         const movieUrl = `d15jncv4xxvixg.cloudfront.net${newMovieFile.id}`
 
-        // axios.post("/movie/generateUrl", {filename: newMovieFile.file.name})
-        // .then(function(res){
-        //     fetch(res.data.message, {
-        //         method: 'PUT',
-        //         body: newMovieFile.file
-        //     })
-        // })
+        setLoading(true)
+        setLoadingStatus("Uploading Movie Poster")
 
-        // axios.post("/movie/generateUrl", {filename: newPosterFile.file.name})
-        // .then(function(res){
-        //     fetch(res.data.message, {
-        //         method: 'PUT',
-        //         body: newPosterFile.file
-        //     })
-        // })
+        axios.post("/movie/generateUrl", {filename: newMovieFile.file.name})
+        .then(function(res){
+            freeAxios.put(res.data.message, newMovieFile.file)
+        })
+
+        setLoadingStatus("Uploading Movie")
+
+        axios.post("/movie/generateUrl", {filename: newPosterFile.file.name})
+        .then(function(res){
+            freeAxios.put(res.data.message, newPosterFile.file)
+        })
 
         values = {...values, poster: posterUrl, movie: movieUrl}
+
+        setLoading(false)
+        setLoadingStatus(null)
+
     }
 
     return (
@@ -138,7 +144,8 @@ export default function Upload() {
                         required
                         {...form.getInputProps('director')}
                     />
-                    <Button type='submit'>Submt</Button>
+                    <Button type='submit' loading={loading}>Submt</Button>
+                    {loadingStatus !== null && <Text align='center' size='xs'>{loadingStatus}</Text>}
                 </Stack>
             </form>
         </Stack>

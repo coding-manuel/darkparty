@@ -5,6 +5,12 @@ export const axios = axiosClass.create({
     withCredentials: true,
     headers: {
         Accept: "application/json",
-        "content-Type": "application/json",
+    },
+});
+
+export const freeAxios = axiosClass.create({
+    baseURL: 'http://localhost:9000/api',
+    headers: {
+        Accept: "application/json",
     },
 });
