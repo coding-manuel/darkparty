@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { showNotification } from '@mantine/notifications';
 import { notificationStyles } from '../globalStyles';
 import { axios, freeAxios } from '../utils/axios'
+import { Uploader } from '../utils/multipartUploader'
 
 const processImage = (item, type) => {
     var id = item[0].name.replaceAll(" ", '') + Math.random().toString(16).slice(2)
@@ -68,6 +69,7 @@ export default function Upload() {
     const [moviePoster, setMoviePoster] = useState(null);
     const [loading, setLoading] = useState(false);
     const [loadingStatus, setLoadingStatus] = useState(null);
+    const [uploader, setUploader] = useState(undefined)
 
     const theme = useMantineTheme()
 
@@ -94,17 +96,41 @@ export default function Upload() {
         setLoading(true)
         setLoadingStatus("Uploading Movie Poster")
 
-        axios.post("/movie/generateUrl", {filename: newMovieFile.file.name})
-        .then(function(res){
-            freeAxios.put(res.data.message, newMovieFile.file)
-        })
-
-        setLoadingStatus("Uploading Movie")
-
         axios.post("/movie/generateUrl", {filename: newPosterFile.file.name})
         .then(function(res){
             freeAxios.put(res.data.message, newPosterFile.file)
         })
+
+        setLoadingStatus("Uploading Movie")
+
+        let percentage = undefined
+
+        const videoUploaderOptions = {
+            fileName: newMovieFile.file.name,
+            file: newMovieFile.file,
+        }
+
+        const uploader = new Uploader(videoUploaderOptions)
+        setUploader(uploader)
+
+        uploader
+            .onProgress(({ percentage: newPercentage }) => {
+            // to avoid the same percentage to be logged twice
+            if (newPercentage !== percentage) {
+                percentage = newPercentage
+                console.log(`${percentage}%`)
+            }
+            })
+            .onError((error) => {
+                console.error(error)
+            })
+
+        uploader.start()
+
+        // axios.post("/movie/generateUrl", {filename: newMovieFile.file.name})
+        // .then(function(res){
+        //     freeAxios.put(res.data.message, newMovieFile.file)
+        // })
 
         values = {...values, poster: posterUrl, movie: movieUrl}
 
