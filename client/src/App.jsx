@@ -6,6 +6,7 @@ import { useLocalStorage } from '@mantine/hooks';
 
 import globalStyles from './globalStyles';
 import { AuthContext, AuthProvider } from './contexts/AuthContext';
+import { PlayerProvider } from './contexts/PlayerContext';
 
 import Home from './pages/Home';
 import Auth from './pages/Auth';
@@ -64,15 +65,17 @@ function App() {
       <MantineProvider theme={theme} styles={globalStyles} withGlobalStyles withNormalizeCSS>
         <NotificationsProvider>
           <AuthProvider>
-            <Layout>
-              <Routes>
-                <Route path='/home' element={<RequireAuth><Home /></RequireAuth>} />
-                <Route path='/upload' element={<RequireAuth><Upload /></RequireAuth>} />
-                <Route path='/movie/:id' element={<RequireAuth><Movie /></RequireAuth>} />
-                <Route path='/auth' element={<Auth />} />
-                <Route path='*' element={<Navigate to='/home' />} />
-              </Routes>
-            </Layout>
+            <PlayerProvider>
+              <Layout>
+                <Routes>
+                  <Route path='/home' element={<RequireAuth><Home /></RequireAuth>} />
+                  <Route path='/upload' element={<RequireAuth><Upload /></RequireAuth>} />
+                  <Route path='/movie/:id' element={<RequireAuth><Movie /></RequireAuth>} />
+                  <Route path='/auth' element={<Auth />} />
+                  <Route path='*' element={<Navigate to='/home' />} />
+                </Routes>
+              </Layout>
+            </PlayerProvider>
           </AuthProvider>
         </NotificationsProvider>
       </MantineProvider>

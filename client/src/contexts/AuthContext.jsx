@@ -114,7 +114,7 @@ export const AuthProvider = ({children}) => {
     }
 
     const isAuth = () => {
-        axios.get("/auth/isauthed")
+        axios.post("/auth/isauthed")
         .then(res => {
             setAuthed(true)
             return true
@@ -125,10 +125,6 @@ export const AuthProvider = ({children}) => {
             return false
         })
     }
-
-    useEffect(() => {
-        isAuth()
-    }, []);
 
     return(
         <AuthContext.Provider value={{signIn, signUp, signOut, authed, isAuth, loading}}>
