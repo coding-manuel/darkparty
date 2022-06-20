@@ -4,9 +4,9 @@ const { v4: uuidv4 } = require('uuid');
 
 const isAuthed = function (req, res) {
     if(!req.session.isAuth){
-        res.status(401)
+        res.status(401).send({ message : 'Not Authed'})
     }
-    res.status(200)
+    res.status(200).send({ message : 'Authed'})
 }
 
 const getUsers = (request, response) => {
