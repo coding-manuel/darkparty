@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { useParams } from 'react-router-dom'
 import { axios } from '../utils/axios';
+import { Container, Group, LoadingOverlay } from '@mantine/core';
 
 import Player from '../components/Player';
 
@@ -10,9 +11,21 @@ export default function Movie() {
 
     useEffect(() => {
         axios.post("/movie/getmovie", {movieID: id})
-        .then(res => setMovieDetails(res.data))
+        .then(res => setMovieDetails(res.data[0]))
     }, [])
+
     return (
-        movieDetails !== null && <Player url={movieDetails.movieurl}/>
+        <Container size='xl'>
+            {movieDetails === null ?
+                <LoadingOverlay visible={true} />
+            :
+                <Group noWrap>
+                    <Player url={movieDetails.movieurl}/>
+                    <div style={{minWidth: 200}}>
+                        sjfklasj
+                    </div>
+                </Group>
+            }
+        </Container>
     )
 }
