@@ -21,6 +21,7 @@
     "react-dom": "^18.0.0",
     "react-player": "^2.10.1",
     "react-router-dom": "^6.3.0",
+    "react-video-seek-slider": "^4.0.17",
     "zod": "^3.17.3"
   },
   "devDependencies": {

@@ -41,6 +41,10 @@ const globalStyles = {
 
     Dropzone : (theme) => ({
         root: { padding: 0, borderStyle: 'solid'}
+    }),
+
+    Tooltip : (theme) => ({
+        body: {color: theme.white, backgroundColor: theme.black}
     })
 }
 
