@@ -1,4 +1,4 @@
-import { Box } from '@mantine/core';
+import { AspectRatio, Box } from '@mantine/core';
 import React from 'react';
 import ReactPlayer from 'react-player/file'
 

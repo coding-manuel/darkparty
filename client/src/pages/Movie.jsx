@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react'
 import { useParams } from 'react-router-dom'
 import { axios } from '../utils/axios';
-import { Container, Group, LoadingOverlay } from '@mantine/core';
+import { Container, Grid, LoadingOverlay, Stack, Text } from '@mantine/core';
 
 import Player from '../components/Player';
+import ChatBox from '../components/ChatBox';
 
 export default function Movie() {
     const [movieDetails, setMovieDetails] = useState(null);
@@ -15,17 +16,14 @@ export default function Movie() {
     }, [])
 
     return (
-        <Container size='xl'>
-            {movieDetails === null ?
-                <LoadingOverlay visible={true} />
-            :
-                <Group noWrap>
+        movieDetails === null ?
+            <LoadingOverlay visible={true} />
+        :
+            <Grid gutter={0} sx={{height: '100vh', width: '100vw', margin: 0}}>
+                <Grid.Col span={9}>
                     <Player url={movieDetails.movieurl}/>
-                    <div style={{minWidth: 200}}>
-                        sjfklasj
-                    </div>
-                </Group>
-            }
-        </Container>
+                </Grid.Col>
+                <Grid.Col span={3}><ChatBox /></Grid.Col>
+            </Grid>
     )
 }
