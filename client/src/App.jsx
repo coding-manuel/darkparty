@@ -66,15 +66,13 @@ function App() {
         <NotificationsProvider>
           <AuthProvider>
             <PlayerProvider>
-              <Layout>
-                <Routes>
-                  <Route path='/home' element={<RequireAuth><Home /></RequireAuth>} />
-                  <Route path='/upload' element={<RequireAuth><Upload /></RequireAuth>} />
+              <Routes>
+                  <Route path='/home' element={<RequireAuth><Layout><Home /></Layout></RequireAuth>} />
+                  <Route path='/upload' element={<RequireAuth><Layout><Upload /></Layout></RequireAuth>} />
                   <Route path='/movie/:id' element={<RequireAuth><Movie /></RequireAuth>} />
                   <Route path='/auth' element={<Auth />} />
                   <Route path='*' element={<Navigate to='/home' />} />
                 </Routes>
-              </Layout>
             </PlayerProvider>
           </AuthProvider>
         </NotificationsProvider>
