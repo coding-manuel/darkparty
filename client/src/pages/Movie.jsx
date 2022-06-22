@@ -19,11 +19,11 @@ export default function Movie() {
         movieDetails === null ?
             <LoadingOverlay visible={true} />
         :
-            <Grid gutter={0} sx={{height: '100vh', width: '100vw', overflow:'hidden', margin: 0}}>
-                <Grid.Col span={9}>
+            <Grid columns={18} gutter={0} sx={{height: '100vh', width: '100vw', overflow:'hidden', margin: 0}}>
+                <Grid.Col span={14}>
                     <Player url={movieDetails.movieurl}/>
                 </Grid.Col>
-                <Grid.Col span={3}><ChatBox /></Grid.Col>
+                <Grid.Col span={4}><ChatBox /></Grid.Col>
             </Grid>
     )
 }
