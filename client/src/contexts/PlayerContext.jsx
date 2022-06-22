@@ -9,7 +9,6 @@ export const PlayerProvider = ({children}) => {
         playing: false,
         seeking: false,
         light: true,
-        volume: 1,
         muted: false,
         played: 0,
         loaded: 0,
@@ -19,10 +18,11 @@ export const PlayerProvider = ({children}) => {
         playbackRate: 1.0,
         loop: false
     });
+    const [volume, setVolume] = useState(1);
 
 
     return(
-        <PlayerContext.Provider value={{playerState, setPlayerState}}>
+        <PlayerContext.Provider value={{playerState, setPlayerState, volume, setVolume}}>
             {children}
         </PlayerContext.Provider>
     )

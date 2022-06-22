@@ -8,9 +8,8 @@ import { PlayerContext } from '../contexts/PlayerContext';
 const Player = ({url}) => {
     const [playing, setPlaying] = useState(false);
     const [muted, setMuted] = useState(false);
-    const [volume, setVolume] = useState(1);
 
-    const {playerState, setPlayerState} = useContext(PlayerContext);
+    const {playerState, setPlayerState, volume, setVolume} = useContext(PlayerContext);
 
     const playerRef = useRef(null)
 
@@ -43,10 +42,7 @@ const Player = ({url}) => {
     }
 
     const handleVolumeChange = (newValue) => {
-        if(newValue === 0)
-            setPlayerState({...playerState, volume: newValue, muted: true})
-        else
-            setPlayerState({...playerState, volume: newValue})
+        setVolume(newValue)
     }
 
     const duration = playerRef && playerRef.current ? playerRef.current.getDuration() : '00:00'
@@ -55,6 +51,13 @@ const Player = ({url}) => {
         setPlayerState({...playerState, duration: duration})
     }, [duration])
 
+    useEffect(()=>{
+        if(volume === 0)
+            setPlayerState({...playerState, muted: true})
+        else
+            setPlayerState({...playerState, muted: false})
+    }, [volume])
+
     return (
         <Box sx={{height: '100%', backgroundColor: '#000', position: 'relative'}}>
             <ReactPlayer
@@ -62,7 +65,7 @@ const Player = ({url}) => {
                 playing={playerState.playing}
                 onProgress={handleProgress}
                 controls={false}
-                volume={playerState.volume}
+                volume={volume}
                 muted={playerState.muted}
                 height='100%'
                 width='100%'
@@ -70,7 +73,7 @@ const Player = ({url}) => {
             />
             <PlayerControls
                 muted={playerState.muted}
-                volume={playerState.volume}
+                volume={volume}
                 playing={playerState.playing}
 
                 duration={playerState.duration}

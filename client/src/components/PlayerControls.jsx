@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import { VideoSeekSlider } from "react-video-seek-slider";
 import { Pause, Play, SpeakerSimpleHigh, SpeakerSimpleLow, SpeakerSimpleSlash } from 'phosphor-react'
-import { Group, Stack, Tooltip, Text, Slider } from '@mantine/core'
+import { Group, Stack, Tooltip, Text, Slider, Button } from '@mantine/core'
 
 import "react-video-seek-slider/styles.css"
 
@@ -29,7 +29,7 @@ export default function PlayerControls({
     const [volumeOpen, setVolumeOpen] = useState(false);
 
     return (
-        <Stack spacing={4} sx={{position: 'absolute', bottom: 0, width: '100%', height: '24px', backgroundColor:'green', padding: '0 16px 56px 16px'}}>
+        <Stack spacing={4} sx={{position: 'absolute', bottom: 0, width: '100%', height: '24px', padding: '0 16px 56px 16px'}}>
             <div onMouseDown={onSeekDown} onMouseUp={onSeekUp}>
                 <VideoSeekSlider
                     max={duration}
@@ -60,7 +60,7 @@ export default function PlayerControls({
                     <StyledTooltip label='Mute'>
                         <SpeakerSimpleHigh onClick={onMute} cursor='pointer' size={16} weight="fill" />
                     </StyledTooltip>}
-                    <Slider size='xs' value={muted ? 0 : volume} onChange={onVolumeChange} sx={{minWidth: volumeOpen ? 50 : 0, opacity: volumeOpen ? 1 : 0, transition: '.1s ease-out'}} label={null}  min={0} max={1} step={0.05} />
+                    <Slider size='xs' value={muted ? 0 : volume} onChange={onVolumeChange} sx={{minWidth: volumeOpen ? 50 : 0, opacity: volumeOpen ? 1 : 0, transition: '.1s ease-out'}} label={null}  min={0} max={1} step={0.1} />
                 </Group>
             </Group>
         </Stack>
