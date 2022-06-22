@@ -28,6 +28,19 @@ export default function PlayerControls({
 }) {
     const [volumeOpen, setVolumeOpen] = useState(false);
 
+    function convertSeconds(seconds) {
+        var convert = function(x) { return (x < 10) ? "0"+x : x; }
+
+        let hours = convert(parseInt(seconds / (60*60)))
+        let minutes = convert(parseInt(seconds / 60 % 60))
+        let second = convert(parseInt(seconds) % 60)
+
+        if(hours == 0)
+            return minutes + ":" + second
+        else
+            return hours + ":" + minutes + ":" + second
+    }
+
     return (
         <Stack spacing={4} sx={{position: 'absolute', bottom: 0, width: '100%', height: '24px', padding: '0 16px 56px 16px'}}>
             <div onMouseDown={onSeekDown} onMouseUp={onSeekUp}>
@@ -60,8 +73,9 @@ export default function PlayerControls({
                     <StyledTooltip label='Mute'>
                         <SpeakerSimpleHigh onClick={onMute} cursor='pointer' size={16} weight="fill" />
                     </StyledTooltip>}
-                    <Slider size='xs' value={muted ? 0 : volume} onChange={onVolumeChange} sx={{minWidth: volumeOpen ? 50 : 0, opacity: volumeOpen ? 1 : 0, transition: '.1s ease-out'}} label={null}  min={0} max={1} step={0.1} />
+                    {volumeOpen && <Slider size='xs' value={muted ? 0 : volume} onChange={onVolumeChange} sx={{minWidth: volumeOpen ? 50 : 0, opacity: volumeOpen ? 1 : 0, transition: '.1s ease-out'}} label={null}  min={0} max={1} step={0.1} />}
                 </Group>
+                <Group spacing={8}><Text size='xs' weight={600}>{convertSeconds(elapsedTime)}</Text><Text size='xs'>/</Text><Text size='xs' color='grey'>{convertSeconds(duration)}</Text></Group>
             </Group>
         </Stack>
     )
