@@ -6,10 +6,7 @@ import PlayerControls from './PlayerControls';
 import { PlayerContext } from '../contexts/PlayerContext';
 
 const Player = ({url}) => {
-    const [playing, setPlaying] = useState(false);
-    const [muted, setMuted] = useState(false);
-
-    const {playerState, setPlayerState, volume, setVolume} = useContext(PlayerContext);
+    const {playerState, setPlayerState, volume, setVolume, handleMouseMove} = useContext(PlayerContext);
 
     const playerRef = useRef(null)
 
@@ -45,6 +42,10 @@ const Player = ({url}) => {
         setVolume(newValue)
     }
 
+    const onMouseMove = () => {
+        handleMouseMove()
+    }
+
     const duration = playerRef && playerRef.current ? playerRef.current.getDuration() : '00:00'
 
     useEffect(()=>{
@@ -59,7 +60,7 @@ const Player = ({url}) => {
     }, [volume])
 
     return (
-        <Box sx={{height: '100%', backgroundColor: '#000', position: 'relative'}}>
+        <Box onMouseMove={onMouseMove} sx={{height: '100%', backgroundColor: '#000', position: 'relative'}}>
             <ReactPlayer
                 ref={playerRef}
                 playing={playerState.playing}

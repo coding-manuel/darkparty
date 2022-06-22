@@ -4,6 +4,8 @@ import { Pause, Play, SpeakerSimpleHigh, SpeakerSimpleLow, SpeakerSimpleSlash } 
 import { Group, Stack, Tooltip, Text, Slider, Button } from '@mantine/core'
 
 import "react-video-seek-slider/styles.css"
+import { useContext } from 'react';
+import { PlayerContext } from '../contexts/PlayerContext';
 
 const StyledTooltip = ({children, label}) => {
     return(
@@ -28,6 +30,8 @@ export default function PlayerControls({
 }) {
     const [volumeOpen, setVolumeOpen] = useState(false);
 
+    const {controlVisible} = useContext(PlayerContext);
+
     function convertSeconds(seconds) {
         var convert = function(x) { return (x < 10) ? "0"+x : x; }
 
@@ -42,7 +46,8 @@ export default function PlayerControls({
     }
 
     return (
-        <Stack spacing={4} sx={{position: 'absolute', bottom: 0, width: '100%', height: '24px', padding: '0 16px 56px 16px'}}>
+        <Stack sx={{position: 'absolute', bottom: 0, width: '100%', height: '24px', padding: '0 16px 56px 16px'}}>
+            <Stack sx={{transition: 'transform .2s ease-out, opacity .4s ease-out', opacity: !controlVisible ? 0 : 1, transform: !controlVisible && 'translate(0, 30px)'}} spacing={4}>
             <div onMouseDown={onSeekDown} onMouseUp={onSeekUp}>
                 <VideoSeekSlider
                     max={duration}
@@ -55,7 +60,7 @@ export default function PlayerControls({
                     limitTimeTooltipBySides
                 />
             </div>
-            <Group>
+            <Group spacing='md'>
                 {playing ?
                 <StyledTooltip label='Pause'>
                     <Pause onClick={onPlayPause} cursor='pointer' size={16} weight="fill" />
@@ -77,6 +82,7 @@ export default function PlayerControls({
                 </Group>
                 <Group spacing={8}><Text size='xs' weight={600}>{convertSeconds(elapsedTime)}</Text><Text size='xs'>/</Text><Text size='xs' color='grey'>{convertSeconds(duration)}</Text></Group>
             </Group>
+            </Stack>
         </Stack>
     )
 }

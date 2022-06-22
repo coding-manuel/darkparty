@@ -19,10 +19,20 @@ export const PlayerProvider = ({children}) => {
         loop: false
     });
     const [volume, setVolume] = useState(1);
+    const [controlVisible, setControlVisible] = useState(false);
+    const [timer, setTimer] = useState(null);
 
+    const handleMouseMove = () => {
+        if(timer){
+            clearTimeout(timer)
+            setTimer(null)
+        }
+        setControlVisible(true)
+        setTimer(setTimeout(() => setControlVisible(false), 1500))
+    }
 
     return(
-        <PlayerContext.Provider value={{playerState, setPlayerState, volume, setVolume}}>
+        <PlayerContext.Provider value={{playerState, setPlayerState, volume, setVolume, controlVisible, handleMouseMove}}>
             {children}
         </PlayerContext.Provider>
     )
