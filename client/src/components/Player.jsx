@@ -1,12 +1,13 @@
 import React, {useRef, useState, useContext, useEffect} from 'react';
-import { AspectRatio, Box } from '@mantine/core';
+import { Box, Group } from '@mantine/core';
+import { FastForward, Pause, Play, Rewind } from 'phosphor-react';
 import ReactPlayer from 'react-player/file'
 
 import PlayerControls from './PlayerControls';
 import { PlayerContext } from '../contexts/PlayerContext';
 
 const Player = ({url}) => {
-    const {playerState, setPlayerState, volume, setVolume, handleMouseMove} = useContext(PlayerContext);
+    const {playerState, setPlayerState, volume, setVolume, handleMouseMove, controlVisible} = useContext(PlayerContext);
 
     const playerRef = useRef(null)
 
@@ -18,6 +19,14 @@ const Player = ({url}) => {
         if(!playerState.seeking){
             setPlayerState({...playerState, elapsedTime: state.playedSeconds, loadedTime: state.loadedSeconds})
         }
+    }
+
+    const handleSeekBack = () => {
+        playerRef.current.seekTo(playerRef.current.getCurrentTime() - 10);
+    }
+
+    const handleSeekForward = () => {
+        playerRef.current.seekTo(playerRef.current.getCurrentTime() + 10);
     }
 
     const handleSeek = (seekTime) => {
@@ -61,11 +70,17 @@ const Player = ({url}) => {
 
     return (
         <Box onMouseMove={onMouseMove} sx={{height: '100%', backgroundColor: '#000', position: 'relative'}}>
+            <Group spacing={24} sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 100, transition: 'opacity .2s ease-out', opacity: !controlVisible ? 0 : 1}}>
+                <Rewind size={32} weight="fill" cursor='pointer' onClick={handleSeekBack} />
+                {!playerState.playing ? <Play onClick={handlePlayPause} cursor='pointer' size={36} weight="fill" /> : <Pause onClick={handlePlayPause} cursor='pointer' size={36} weight="fill" />}
+                <FastForward size={32} cursor='pointer' weight="fill" onClick={handleSeekForward} />
+            </Group>
             <ReactPlayer
                 ref={playerRef}
                 playing={playerState.playing}
                 onProgress={handleProgress}
                 controls={false}
+                style={{position: 'absolute'}}
                 volume={volume}
                 muted={playerState.muted}
                 height='100%'
