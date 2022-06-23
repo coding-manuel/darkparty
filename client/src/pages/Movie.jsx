@@ -10,7 +10,7 @@ import ChatBox from '../components/ChatBox';
 export default function Movie() {
     const [movieDetails, setMovieDetails] = useState(null);
     const {socket} = useContext(SocketContext);
-    const {id} = useParams()
+    const {id, roomid} = useParams()
 
     useEffect(() => {
         axios.post("/movie/getmovie", {movieID: id})
@@ -18,10 +18,10 @@ export default function Movie() {
     }, [])
 
     useEffect(() => {
-        if(socket){
-            socket.emit("join_room")
+        if(roomid && socket){
+            socket.emit("join_room", roomid)
         }
-    }, [socket])
+    }, [roomid])
 
     return (
         movieDetails === null ?

@@ -9,6 +9,7 @@ export const AuthContext = React.createContext()
 export const AuthProvider = ({children}) => {
     const [authed, setAuthed] = useState(localStorage.getItem("authed") || false);
     const [loading, setLoading] = useState(false);
+    const [username, setUsername] = useState(localStorage.getItem("username") || '');
     const navigate = useNavigate()
 
     const signUp = (values) => {
@@ -52,7 +53,7 @@ export const AuthProvider = ({children}) => {
         axios.post("/auth/login", {email: values.email, password: values.password})
         .then(function (response){
             localStorage.setItem("authed", true)
-            localStorage.setItem("username", res.data.username)
+            localStorage.setItem("username", response.data.username)
             setAuthed(true)
             navigate('/home')
         })
@@ -129,7 +130,7 @@ export const AuthProvider = ({children}) => {
     }
 
     return(
-        <AuthContext.Provider value={{signIn, signUp, signOut, authed, isAuth, loading}}>
+        <AuthContext.Provider value={{signIn, signUp, signOut, authed, isAuth, username, loading}}>
             {children}
         </AuthContext.Provider>
     )

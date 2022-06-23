@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import { Button, Tooltip, Box, Textarea, Text, Group, Stack, useMantineTheme, ActionIcon } from '@mantine/core';
 import LogoLight from '../assets/logo-light.svg'
-import { ArrowFatLeft, ArrowFatRight, Link } from 'phosphor-react';
+import { ArrowFatRight, Link } from 'phosphor-react';
 import { showNotification } from '@mantine/notifications';
+
 import { notificationStyles } from '../globalStyles';
+import {SocketContext} from "../contexts/SocketContext"
 import { PlayerContext } from '../contexts/PlayerContext';
-import { useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
 
 const StyledTooltip = ({children, label}) => {
     return(
@@ -26,7 +28,11 @@ const StyledMessage = ({me, message}) => {
 
 const ChatBox = () => {
     const [chatOpen, setChatOpen] = useState(true);
+    const [messageValue, setMessageValue] = useState('');
+
     const {controlVisible} = useContext(PlayerContext);
+    const {username} = useContext(AuthContext);
+    const {socket} = useContext(SocketContext);
 
     const handleShareLink = () => {
         navigator.clipboard.writeText('https://djghsdjhgjdsgjh')
@@ -34,6 +40,21 @@ const ChatBox = () => {
             title: 'Link to party copied',
             styles: notificationStyles
         })
+    }
+
+    const handleKeyPress = (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleMessage()
+        }
+    }
+
+    const handleMessage = () => {
+        if(messageValue !== ''){
+            // const messageData = {
+            //     room:
+            // }
+        }
     }
 
     return (
@@ -76,12 +97,15 @@ const ChatBox = () => {
                 <Stack spacing={0} sx={{flexDirection: 'row'}}>
                     <Textarea
                         sx={{justifySelf: 'flex-end', border: '1px solid #ffffff', borderWidth: '1px 1px 1px 0', padding:'0 8px', width: '100%'}}
+                        value={messageValue}
+                        onChange={(event) => setMessageValue(event.currentTarget.value)}
+                        onKeyDown={handleKeyPress}
                         maxRows={1}
                         placeholder="Send Text"
                         variant="unstyled"
                         required
                     />
-                    <Button radius={0}><ArrowFatRight size={16} weight="fill" /></Button>
+                    <Button onClick={handleMessage} radius={0}><ArrowFatRight size={16} weight="fill" /></Button>
                 </Stack>
             </Stack>
         </>

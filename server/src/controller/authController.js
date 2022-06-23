@@ -6,7 +6,9 @@ const isAuthed = function (req, res) {
     if(!req.session.isAuth){
         res.status(401).send({ message : 'Not Authed'})
     }
-    res.status(200).send({ message : 'Authed', username: req.session.user.username})
+    else{
+        res.status(200).send({ message : 'Authed', username: req.session.user.username})
+    }
 }
 
 const getUsers = (request, response) => {

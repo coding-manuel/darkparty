@@ -72,7 +72,7 @@ function App() {
                 <Routes>
                     <Route path='/home' element={<RequireAuth><Layout><Home /></Layout></RequireAuth>} />
                     <Route path='/upload' element={<RequireAuth><Layout><Upload /></Layout></RequireAuth>} />
-                    <Route path='/movie/:id' element={<RequireAuth><Movie /></RequireAuth>} />
+                    <Route path='/movie/:id/party/:roomid' element={<RequireAuth><Movie /></RequireAuth>} />
                     <Route path='/auth' element={<Auth />} />
                     <Route path='*' element={<Navigate to='/home' />} />
                 </Routes>

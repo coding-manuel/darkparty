@@ -67,8 +67,13 @@ app.use("/api/movie", movieRoutes)
 //! Sockets
 
 io.on("connection", (socket) => {
-    socket.on("join_room", () => {
-        socket.join(uuidv4)
+    socket.on("create_room", () => {
+        const roomID = uuidv4()
+        socket.emit("send_roomID", {roomID: roomID,})
+    })
+
+    socket.on("join_room", ({roomID}) => {
+        socket.join(roomID)
         console.log(socket.id, "joined room")
     })
 
