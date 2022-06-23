@@ -2,6 +2,8 @@ const express = require('express');
 const session = require('express-session')
 const morgan = require('morgan')
 const cors = require('cors')
+const {Server} = require('socket.io')
+const { v4: uuidv4 } = require('uuid');
 
 const authRoutes = require("./routes/authRoutes");
 const movieRoutes = require("./routes/movieRoutes");
@@ -11,10 +13,18 @@ const pool = require('./utils/db');
 
 require('dotenv').config()
 
+
 const app = express()
 const port = 9000
 
 const server = require('http').createServer(app)
+const io = new Server(server, {
+    cors:{
+        origin: 'http://localhost:3000',
+        methods: ['POST', 'PUT', 'GET', 'OPTIONS', 'HEAD'],
+        credentials: 'true'
+    }
+})
 
 // session store and session config
 const store = require('connect-pg-simple')(session)
@@ -54,8 +64,17 @@ app.use(
 app.use("/api/auth", authRoutes)
 app.use("/api/movie", movieRoutes)
 
-app.get('/', (request, response) => {
-    response.json({ info: 'Node.js, Express, and Postgres API' })
+//! Sockets
+
+io.on("connection", (socket) => {
+    socket.on("join_room", () => {
+        socket.join(uuidv4)
+        console.log(socket.id, "joined room")
+    })
+
+    socket.on("disconnect", () => {
+        console.log(socket.id, "left")
+    })
 })
 
 server.listen(port, () => {

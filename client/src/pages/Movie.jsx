@@ -1,19 +1,27 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import { useParams } from 'react-router-dom'
 import { axios } from '../utils/axios';
 import { Box, LoadingOverlay } from '@mantine/core';
 
+import {SocketContext} from "../contexts/SocketContext"
 import Player from '../components/Player';
 import ChatBox from '../components/ChatBox';
 
 export default function Movie() {
     const [movieDetails, setMovieDetails] = useState(null);
+    const {socket} = useContext(SocketContext);
     const {id} = useParams()
 
     useEffect(() => {
         axios.post("/movie/getmovie", {movieID: id})
-        .then(res => setMovieDetails(res.data[0]))
+            .then(res => setMovieDetails(res.data[0]))
     }, [])
+
+    useEffect(() => {
+        if(socket){
+            socket.emit("join_room")
+        }
+    }, [socket])
 
     return (
         movieDetails === null ?

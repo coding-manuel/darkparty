@@ -117,12 +117,11 @@ export const AuthProvider = ({children}) => {
         axios.post("/auth/isauthed")
         .then(res => {
             setAuthed(true)
-            return true
+            localStorage.setItem("authed", true)
         })
         .catch(err => {
             localStorage.setItem("authed", false)
             setAuthed(false)
-            return false
         })
     }
 
