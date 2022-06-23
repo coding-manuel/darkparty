@@ -69,7 +69,7 @@ const Player = ({url}) => {
     }, [volume])
 
     return (
-        <Box onMouseMove={onMouseMove} sx={{height: '100%', backgroundColor: '#000', position: 'relative'}}>
+        <Box onMouseMove={onMouseMove} sx={{height: '100%', backgroundColor: '#000', position: 'relative', flexGrow: 10}}>
             <Group spacing={24} sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 100, transition: 'opacity .2s ease-out', opacity: !controlVisible ? 0 : 1}}>
                 <Rewind size={32} weight="fill" cursor='pointer' onClick={handleSeekBack} />
                 {!playerState.playing ? <Play onClick={handlePlayPause} cursor='pointer' size={36} weight="fill" /> : <Pause onClick={handlePlayPause} cursor='pointer' size={36} weight="fill" />}
