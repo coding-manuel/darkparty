@@ -63,7 +63,7 @@ export default function Auth() {
     return (
         <Box sx={{width: "90%", maxWidth: '350px', margin: 'auto'}}>
             <Stack>
-                <img style={{padding: '24px', maxHeight: '80px'}} src={colorScheme !== 'dark' ? LogoLight : LogoDark} alt="" />
+                <img style={{padding: '24px', maxHeight: '80px'}} src={colorScheme.colorScheme === 'dark' ? LogoLight : LogoDark} alt="" />
                 <Tabs active={activeTab} onTabChange={onChange} grow position='center' variant="pills">
                     <Tabs.Tab label="Sign In" tabKey="signIn">
                         <form onSubmit={signInForm.onSubmit((values) => handleSignIn(values))}>
