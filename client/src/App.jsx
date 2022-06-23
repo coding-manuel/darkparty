@@ -21,6 +21,7 @@ function App() {
     defaultValue: 'light',
     getInitialValueInEffect: true,
   });
+
   const toggleColorScheme = (value) => setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
   const theme = {

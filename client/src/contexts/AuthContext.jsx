@@ -52,6 +52,7 @@ export const AuthProvider = ({children}) => {
         axios.post("/auth/login", {email: values.email, password: values.password})
         .then(function (response){
             localStorage.setItem("authed", true)
+            localStorage.setItem("username", res.data.username)
             setAuthed(true)
             navigate('/home')
         })
@@ -84,6 +85,7 @@ export const AuthProvider = ({children}) => {
         axios.post("/auth/logout")
         .then(function (response){
             localStorage.setItem("authed", false)
+            localStorage.setItem("username", '')
             setAuthed(false)
             showNotification({
                 title: 'Succesfully Logged Out',
@@ -118,6 +120,7 @@ export const AuthProvider = ({children}) => {
         .then(res => {
             setAuthed(true)
             localStorage.setItem("authed", true)
+            localStorage.setItem("username", res.data.username)
         })
         .catch(err => {
             localStorage.setItem("authed", false)
