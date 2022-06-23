@@ -47,7 +47,7 @@ const StyledMessage = ({me, message, username, time}) => {
     )
 }
 
-const ChatBox = ({roomID, username}) => {
+const ChatBox = ({roomID, movieID, username}) => {
     const [chatOpen, setChatOpen] = useState(true);
     const [messageValue, setMessageValue] = useState('');
     const [messages, setMessages] = useState([]);
@@ -56,7 +56,7 @@ const ChatBox = ({roomID, username}) => {
     const {socket} = useContext(SocketContext);
 
     const handleShareLink = () => {
-        navigator.clipboard.writeText('https://djghsdjhgjdsgjh')
+        navigator.clipboard.writeText(`http://localhost:3000/movie/${movieID}/party/${roomID}`)
         showNotification({
             title: 'Link to party copied',
             styles: notificationStyles

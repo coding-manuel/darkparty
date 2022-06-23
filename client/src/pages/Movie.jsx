@@ -31,7 +31,7 @@ export default function Movie() {
         :
             <Box sx={{height: '100vh', width: '100vw', overflow:'hidden', margin: 0, display: 'flex'}}>
                 <Player url={movieDetails.movieurl}/>
-                <ChatBox roomID={roomid} username={username} />
+                <ChatBox roomID={roomid} movieID={id} username={username} />
             </Box>
     )
 }
