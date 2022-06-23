@@ -111,8 +111,8 @@ const ChatBox = ({roomID, movieID, username}) => {
 
     return (
         <>
-            <ActionIcon onClick={() => setChatOpen(!chatOpen)} sx={{position: 'absolute', top: 40, right: chatOpen ? 300 : 0, transition: 'right .3s ease-out, opacity .2s ease-out', opacity: controlVisible ? 1 : 0}}>
-                <ArrowFatRight size={16} weight="fill" style={{transform : chatOpen && 'rotate(180deg)', transition: '.2s ease-out'}} />
+            <ActionIcon onClick={() => setChatOpen(!chatOpen)} sx={{position: 'absolute', background: '#1A1B1E', borderRadius: '4px 0 0 4px', border: 'none', top: '50%', right: chatOpen ? 300 : 0, transition: 'right .3s ease-out, opacity .2s ease-out', transform: 'translate(0, -50%)', "&:active": {transform: 'translate(0, -50%)'}, opacity: controlVisible ? 1 : 0}}>
+                <ArrowFatRight size={16} weight="fill" style={{transform : !chatOpen && 'rotate(180deg)', transition: '.2s ease-out'}} />
             </ActionIcon>
             <Stack spacing={0} sx={{height: '100%', width: chatOpen ? 300 : 0, opacity: chatOpen ? 1 : 0, transition: 'width .3s ease-out, opacity .2s ease-out'}}>
                 <Group spacing={150} position='center' py={12} sx={{borderBottom: '2px solid #ffffff'}}>

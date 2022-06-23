@@ -1,13 +1,16 @@
 import React, {useRef, useState, useContext, useEffect} from 'react';
-import { Box, Group } from '@mantine/core';
-import { FastForward, Pause, Play, Rewind } from 'phosphor-react';
+import { Box, Group, Text } from '@mantine/core';
+import { ArrowLeft, FastForward, Pause, Play, Rewind } from 'phosphor-react';
 import ReactPlayer from 'react-player/file'
 
 import PlayerControls from './PlayerControls';
 import { PlayerContext } from '../contexts/PlayerContext';
+import { useNavigate } from 'react-router-dom';
 
 const Player = ({url}) => {
     const {playerState, setPlayerState, volume, setVolume, handleMouseMove, controlVisible} = useContext(PlayerContext);
+
+    const navigate = useNavigate()
 
     const playerRef = useRef(null)
 
@@ -55,6 +58,10 @@ const Player = ({url}) => {
         handleMouseMove()
     }
 
+    const handleBack = () => {
+        navigate('/home')
+    }
+
     const duration = playerRef && playerRef.current ? playerRef.current.getDuration() : '00:00'
 
     useEffect(()=>{
@@ -74,6 +81,10 @@ const Player = ({url}) => {
                 <Rewind size={32} weight="fill" cursor='pointer' onClick={handleSeekBack} />
                 {!playerState.playing ? <Play onClick={handlePlayPause} cursor='pointer' size={36} weight="fill" /> : <Pause onClick={handlePlayPause} cursor='pointer' size={36} weight="fill" />}
                 <FastForward size={32} cursor='pointer' weight="fill" onClick={handleSeekForward} />
+            </Group>
+            <Group onClick={handleBack} spacing={4} sx={{position: 'absolute', top: 20, left: 20, transition: '.2s ease-out', opacity: !controlVisible ? 0 : 1, zIndex: 100, cursor: 'pointer', '&:hover': {gap: 6, borderBottom: '1px solid #ffffff'}}}>
+                <ArrowLeft size={16} weight="fill" />
+                <Text>Back</Text>
             </Group>
             <ReactPlayer
                 ref={playerRef}
