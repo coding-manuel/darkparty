@@ -141,7 +141,7 @@ const ChatBox = ({roomID, movieID, username}) => {
                         variant="unstyled"
                         required
                     />
-                    <Button onClick={handleMessage} radius={0}><ArrowFatRight size={16} weight="fill" /></Button>
+                    <Button disabled={messageValue === ''} onClick={handleMessage} radius={0}><ArrowFatRight size={16} weight="fill" /></Button>
                 </Stack>
             </Stack>
         </>

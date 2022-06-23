@@ -36,7 +36,7 @@ const globalStyles = {
     }),
 
     Button : (theme) => ({
-        filled: { border: `1px solid ${theme.colorScheme === 'dark' ? theme.white : theme.black}`, transition: '.2s ease', '&:hover': {background: `${theme.colors.orange[5]}!important`, transform: 'translate(0px, -3px)' }}
+        filled: { border: `1px solid ${theme.colorScheme === 'dark' ? theme.white : theme.black} !important`, transition: '.2s ease', '&:hover': {background: `${theme.colors.orange[5]}!important`, transform: 'translate(0px, -3px)' }}
     }),
 
     Dropzone : (theme) => ({
