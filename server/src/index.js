@@ -13,7 +13,8 @@ const pool = require('./utils/db');
 
 require('dotenv').config()
 
-
+const rooms = []
+//rooms -> [{roomID, movieID, users = [socketID: username]}]
 const app = express()
 const port = 9000
 
@@ -69,15 +70,26 @@ app.use("/api/movie", movieRoutes)
 io.on("connection", (socket) => {
     socket.on("create_room", () => {
         const roomID = uuidv4()
-        socket.emit("send_roomID", {roomID: roomID,})
+        socket.emit("send_roomID", {roomID: roomID})
     })
 
-    socket.on("join_room", ({roomID}) => {
+    socket.on("join_room", ({roomID, username, movieID}) => {
+        rooms.push({roomID: roomID, movieID: movieID, users: [{id: socket.id, username: username}]})
         socket.join(roomID)
-        console.log(socket.id, "joined room")
+        socket.to(roomID).emit("new_user", {username: username, message: 'joined the party'})
+    })
+
+    socket.on("send_message", (messageData) => {
+        socket.to(messageData.room).emit("receive_message", messageData)
     })
 
     socket.on("disconnect", () => {
+        try {
+            const user = rooms.find(room => room.users.find(user => user.id == socket.id))
+            socket.to(user.roomID).emit("left_user", {username: user.users[0].username, message: 'left the party'})
+        } catch (error) {
+            console.log(error)
+        }
         console.log(socket.id, "left")
     })
 })

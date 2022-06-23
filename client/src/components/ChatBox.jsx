@@ -1,13 +1,13 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import { Button, Tooltip, Box, Textarea, Text, Group, Stack, useMantineTheme, ActionIcon } from '@mantine/core';
 import LogoLight from '../assets/logo-light.svg'
 import { ArrowFatRight, Link } from 'phosphor-react';
 import { showNotification } from '@mantine/notifications';
+import ReactTimeAgo from 'react-time-ago'
 
 import { notificationStyles } from '../globalStyles';
 import {SocketContext} from "../contexts/SocketContext"
 import { PlayerContext } from '../contexts/PlayerContext';
-import { AuthContext } from '../contexts/AuthContext';
 
 const StyledTooltip = ({children, label}) => {
     return(
@@ -16,22 +16,43 @@ const StyledTooltip = ({children, label}) => {
         </Tooltip>
 )}
 
-const StyledMessage = ({me, message}) => {
-    const theme = useMantineTheme()
+const StyledEvent = ({username, message}) => {
 
     return(
-    <Box ml={me && 24} mr={!me && 24} sx={{width: 'fit-content', border: '1px solid #fff', borderRadius: 4, padding: 8, background: me ? theme.colors.dark[6] : theme.colors.orange[5]}}>
-        <Text size='xs' color='white'>{message}</Text>
-    </Box>
+    <Stack mx={12}>
+        <Text align='center' size='xs' color='white'>{username} {message}</Text>
+    </Stack>
     )
 }
 
-const ChatBox = () => {
+const StyledMessage = ({me, message, username, time}) => {
+    const theme = useMantineTheme()
+
+    return(
+    <Stack mx={12} my={6} spacing={2}>
+        {me ?
+        <Group position='right'>
+            <Text sx={{fontSize: 10}} color='gray'><ReactTimeAgo date={time} locale="en-US"/></Text>
+            <Text sx={{fontSize: 10}} weight={600} color='white'>{username}</Text>
+        </Group>
+        :
+        <Group position='left'>
+            <Text sx={{fontSize: 10}} weight={600} color='white'>{username}</Text>
+            <Text sx={{fontSize: 10}} color='gray'><ReactTimeAgo date={time} locale="en-US"/></Text>
+        </Group>}
+        <Box sx={{minWidth: 150, width: 'fit-content', overflowWrap: 'anywhere', border: '1px solid #fff', alignSelf: me && "flex-end", borderRadius: 4, padding: 8, background: me ? theme.colors.dark[6] : theme.colors.orange[5]}}>
+            <Text size='xs' color='white'>{message}</Text>
+        </Box>
+    </Stack>
+    )
+}
+
+const ChatBox = ({roomID, username}) => {
     const [chatOpen, setChatOpen] = useState(true);
     const [messageValue, setMessageValue] = useState('');
+    const [messages, setMessages] = useState([]);
 
     const {controlVisible} = useContext(PlayerContext);
-    const {username} = useContext(AuthContext);
     const {socket} = useContext(SocketContext);
 
     const handleShareLink = () => {
@@ -51,11 +72,42 @@ const ChatBox = () => {
 
     const handleMessage = () => {
         if(messageValue !== ''){
-            // const messageData = {
-            //     room:
-            // }
+            const messageData = {
+                room: roomID,
+                author: username,
+                message: messageValue,
+                time: Date.now()
+            }
+
+            socket.emit("send_message", messageData)
+            setMessages(message => [...message, messageData])
+            setMessageValue("")
         }
     }
+
+    useEffect(() => {
+        if(socket){
+            socket.on("receive_message", (messageData) => {
+                setMessages(message => [...message, messageData])
+            })
+        }
+    }, [socket]);
+
+    useEffect(() => {
+        if(socket){
+            socket.on("new_user", (data) => {
+                setMessages(event => [...event, data])
+            })
+        }
+    }, [socket]);
+
+    useEffect(() => {
+        if(socket){
+            socket.on("left_user", (data) => {
+                setMessages(event => [...event, data])
+            })
+        }
+    }, [socket]);
 
     return (
         <>
@@ -70,29 +122,13 @@ const ChatBox = () => {
                     </StyledTooltip>
                 </Group>
                 <Stack spacing={8} sx={{flexGrow: 2, height: '80%', overflow: 'scroll', padding: '4px 8px'}}>
-                    <StyledMessage me={true} message='Dude, I cannot believe what just happened' />
-                    <StyledMessage me={false} message='Yes me too' />
-                    <StyledMessage me={true} message='Dude, I cannot believe what just happened' />
-                    <StyledMessage me={false} message='Yes me too' />
-                    <StyledMessage me={true} message='Dude, I cannot believe what just happened' />
-                    <StyledMessage me={true} message='Dude, I cannot believe what just happened' />
-                    <StyledMessage me={true} message='Dude, I cannot believe what just happened' />
-                    <StyledMessage me={true} message='Dude, I cannot believe what just happened' />
-                    <StyledMessage me={false} message='Yes me too' />
-                    <StyledMessage me={true} message='Dude, I cannot believe what just happened' />
-                    <StyledMessage me={false} message='Yes me too' />
-                    <StyledMessage me={true} message='Dude, I cannot believe what just happened' />
-                    <StyledMessage me={false} message='Yes me too' />
-                    <StyledMessage me={true} message='Dude, I cannot believe what just happened' />
-                    <StyledMessage me={false} message='Yes me too' />
-                    <StyledMessage me={true} message='Dude, I cannot believe what just happened' />
-                    <StyledMessage me={false} message='Yes me too' />
-                    <StyledMessage me={true} message='Dude, I cannot believe what just happened' />
-                    <StyledMessage me={false} message='Yes me too' />
-                    <StyledMessage me={true} message='Dude, I cannot believe what just happened' />
-                    <StyledMessage me={false} message='Yes me too' />
-                    <StyledMessage me={true} message='Dude, I cannot believe what just happened' />
-                    <StyledMessage me={false} message='Yes me too' />
+                    {messages.map(message => {
+                        return(
+                            message.time ?
+                            <StyledMessage me={message.author === username} message={message.message} username={message.author} time={message.time} />
+                            :
+                            <StyledEvent username={message.username} message={message.message} />
+                    )})}
                 </Stack>
                 <Stack spacing={0} sx={{flexDirection: 'row'}}>
                     <Textarea
