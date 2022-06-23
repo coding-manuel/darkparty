@@ -1,7 +1,7 @@
 import React from 'react';
-import { Paper, Tooltip, TextInput, Text, Group, Stack } from '@mantine/core';
+import { Button, Tooltip, Textarea, Text, Group, Stack } from '@mantine/core';
 import LogoLight from '../assets/logo-light.svg'
-import { Link } from 'phosphor-react';
+import { ArrowFatRight, Link } from 'phosphor-react';
 import { showNotification } from '@mantine/notifications';
 import { notificationStyles } from '../globalStyles';
 
@@ -22,14 +22,59 @@ const ChatBox = () => {
     }
 
     return (
-        <Stack sx={{height: '100%', padding: '12px 0', width: 250}}>
-            <Group spacing={110} position='center' pb={12} sx={{borderBottom: '2px solid #ffffff'}}>
+        <Stack spacing={0} sx={{height: '100%', width: 300}}>
+            <Group spacing={110} position='center' py={12} sx={{borderBottom: '2px solid #ffffff'}}>
                 <img src={LogoLight} alt="" />
                 <StyledTooltip label='Share Link'>
                     <Link onClick={handleShareLink} cursor='pointer' size={16} weight="fill" />
                 </StyledTooltip>
             </Group>
-            <Stack sx={{flexGrow: 2}}>
+            <Stack sx={{flexGrow: 2, height: '80%', overflow: 'scroll'}}>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
+                <div>
+                    asfjdsakfgj
+                </div>
                 <div>
                     asfjdsakfgj
                 </div>
@@ -46,7 +91,16 @@ const ChatBox = () => {
                     asfjdsakfgj
                 </div>
             </Stack>
-            <TextInput sx={{justifySelf: 'flex-end'}} placeholder='Send Text' />
+            <Stack spacing={0} sx={{flexDirection: 'row'}}>
+                <Textarea
+                    sx={{justifySelf: 'flex-end', border: '1px solid #ffffff', borderWidth: '1px 1px 1px 0', padding:'0 8px', width: '100%'}}
+                    maxRows={1}
+                    placeholder="Send Text"
+                    variant="unstyled"
+                    required
+                />
+                <Button radius={0}><ArrowFatRight size={16} weight="fill" /></Button>
+            </Stack>
         </Stack>
     );
 }

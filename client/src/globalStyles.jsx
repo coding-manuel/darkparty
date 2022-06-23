@@ -45,6 +45,10 @@ const globalStyles = {
 
     Tooltip : (theme) => ({
         body: {color: theme.white, backgroundColor: theme.black}
+    }),
+
+    Textarea : (theme) => ({
+        input: {paddingTop: '8px !important', paddingBottom: '4px !important', height: '35px'}
     })
 }
 
