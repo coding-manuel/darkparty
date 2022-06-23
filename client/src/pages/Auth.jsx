@@ -14,7 +14,7 @@ export default function Auth() {
     const navigate = useNavigate()
     const location = useLocation()
 
-    let from = location.state.from || "/home";
+    let from = location.state && location.state.from || "/home";
 
     const [activeTab, setActiveTab] = useState(0);
 
