@@ -5,12 +5,16 @@ import LogoDark from "../assets/logo-dark.svg"
 import LogoLight from "../assets/logo-light.svg"
 import { useForm, zodResolver } from '@mantine/form'
 import { AuthContext } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function Auth() {
     const { signIn, signUp, authed, loading } = useContext(AuthContext);
     const colorScheme = useMantineColorScheme()
+
     const navigate = useNavigate()
+    const location = useLocation()
+
+    let from = location.state.from || "/home";
 
     const [activeTab, setActiveTab] = useState(0);
 
@@ -49,7 +53,7 @@ export default function Auth() {
     }
 
     const handleSignIn = (values) => {
-        signIn(values)
+        signIn(values, from)
     }
 
     const handleOpenAppClick = (values) => {

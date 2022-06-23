@@ -48,14 +48,14 @@ export const AuthProvider = ({children}) => {
         })
     }
 
-    const signIn = (values) => {
+    const signIn = (values, from) => {
         setLoading(true)
         axios.post("/auth/login", {email: values.email, password: values.password})
         .then(function (response){
             localStorage.setItem("authed", true)
             localStorage.setItem("username", response.data.username)
             setAuthed(true)
-            navigate('/home')
+            navigate(from)
         })
         .catch(function (error){
             if(error.response){

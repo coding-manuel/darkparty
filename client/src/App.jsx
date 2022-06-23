@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { MantineProvider, ColorSchemeProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import { useLocalStorage } from '@mantine/hooks';
@@ -73,6 +73,7 @@ function App() {
                     <Route path='/home' element={<RequireAuth><Layout><Home /></Layout></RequireAuth>} />
                     <Route path='/upload' element={<RequireAuth><Layout><Upload /></Layout></RequireAuth>} />
                     <Route path='/movie/:id/party/:roomid' element={<RequireAuth><Movie /></RequireAuth>} />
+                    <Route path='/chicken' element={<RequireAuth><Home/></RequireAuth>} />
                     <Route path='/auth' element={<Auth />} />
                     <Route path='*' element={<Navigate to='/home' />} />
                 </Routes>
@@ -87,8 +88,11 @@ function App() {
 
 function RequireAuth({ children }) {
   const {isAuth, authed} = useContext(AuthContext);
+  let location = useLocation();
+  console.log(location)
+
   isAuth()
-  return authed ? children : <Navigate to='/auth' />;
+  return authed ? children : <Navigate to='/auth' state={{ from: location.pathname }} replace />;
 }
 
 export default App
