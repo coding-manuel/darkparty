@@ -95,7 +95,8 @@ const ChatBox = ({roomID, movieID, username}) => {
 
     useEffect(() => {
         if(socket){
-            socket.on("new_user", (data) => {
+            socket.on("new_event", (data) => {
+                console.log(data)
                 setMessages(event => [...event, data])
             })
         }

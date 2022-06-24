@@ -6,16 +6,35 @@ import ReactPlayer from 'react-player/file'
 import PlayerControls from './PlayerControls';
 import { PlayerContext } from '../contexts/PlayerContext';
 import { useNavigate } from 'react-router-dom';
+import { SocketContext } from '../contexts/SocketContext';
 
-const Player = ({url}) => {
-    const {playerState, setPlayerState, volume, setVolume, handleMouseMove, controlVisible} = useContext(PlayerContext);
+const Player = ({url, roomID}) => {
+    const {
+        playerState,
+        setPlayerState,
+        volume,
+        setVolume,
+        handleMouseMove,
+        controlVisible,
+        setVolumeChange,
+        setMute,
+        setSeekBack,
+        setSeekDown,
+        setSeekUp,
+        setSeekForward,
+        setProgress,
+        setSeek,
+        setPlayPause,
+    } = useContext(PlayerContext);
+    const {socket} = useContext(SocketContext);
 
     const navigate = useNavigate()
 
     const playerRef = useRef(null)
 
     const handlePlayPause = () => {
-        setPlayerState({...playerState, playing: !playerState.playing})
+        setPlayPause()
+        socket.emit("on_play_pause", roomID)
     }
 
     const handleProgress = (state) => {
@@ -63,6 +82,14 @@ const Player = ({url}) => {
     }
 
     const duration = playerRef && playerRef.current ? playerRef.current.getDuration() : '00:00'
+
+    useEffect(()=>{
+        if(socket){
+            socket.on("handle_play_pause", () => {
+                setPlayPause()
+            })
+        }
+    }, [socket, playerState])
 
     useEffect(()=>{
         setPlayerState({...playerState, duration: duration})

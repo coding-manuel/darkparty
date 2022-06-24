@@ -27,12 +27,70 @@ export const PlayerProvider = ({children}) => {
             clearTimeout(timer)
             setTimer(null)
         }
-        setControlVisible(true)
-        setTimer(setTimeout(() => setControlVisible(false), 1500))
+            setControlVisible(true)
+        setTimer(setTimeout(() => {
+            if(!playerState.seeking) setControlVisible(false)
+        }, 1500))
+    }
+
+    const setPlayPause = () => {
+        setPlayerState({...playerState, playing: !playerState.playing})
+    }
+
+    const setProgress = (state) => {
+        if(!playerState.seeking){
+            setPlayerState({...playerState, elapsedTime: state.playedSeconds, loadedTime: state.loadedSeconds})
+        }
+    }
+
+    const setSeekBack = () => {
+        playerRef.current.seekTo(playerRef.current.getCurrentTime() - 10);
+    }
+
+    const setSeekForward = () => {
+        playerRef.current.seekTo(playerRef.current.getCurrentTime() + 10);
+    }
+
+    const setSeek = (seekTime) => {
+        if(!playerState.seeking){
+            playerRef.current.seekTo(seekTime, "seconds");
+        }
+    }
+
+    const setSeekUp = () => {
+        setPlayerState({...playerState, seeking: false, playing: true})
+    }
+
+    const setSeekDown = () => {
+        setPlayerState({...playerState, seeking: true, playing: false})
+    }
+
+    const setMute = () => {
+        setPlayerState({...playerState, muted: !playerState.muted})
+    }
+
+    const setVolumeChange = (newValue) => {
+        setVolume(newValue)
     }
 
     return(
-        <PlayerContext.Provider value={{playerState, setPlayerState, volume, setVolume, controlVisible, handleMouseMove}}>
+        <PlayerContext.Provider value={{
+            setVolumeChange,
+            setMute,
+            setSeekBack,
+            setSeekDown,
+            setSeekUp,
+            setSeekForward,
+            setProgress,
+            setSeek,
+            setPlayPause,
+            playerState,
+            setPlayerState,
+            volume,
+            setVolume,
+            controlVisible,
+            handleMouseMove
+        }}>
             {children}
         </PlayerContext.Provider>
     )

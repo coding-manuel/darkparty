@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 const {Server} = require('socket.io')
 const { v4: uuidv4 } = require('uuid');
+const { _ } = require('lodash')
 
 const authRoutes = require("./routes/authRoutes");
 const movieRoutes = require("./routes/movieRoutes");
@@ -67,30 +68,54 @@ app.use("/api/movie", movieRoutes)
 
 //! Sockets
 
+function findUser (socket) {
+    const room = _.find(rooms, (room) => {
+        return room
+    })
+
+    const user = room.users.filter((user) => socket.id in user)
+
+    return {roomID: room.roomID, username: user[0][socket.id]}
+}
+
 io.on("connection", (socket) => {
-    socket.on("create_room", () => {
+    socket.on("create_room", (movieID, username) => {
         const roomID = uuidv4()
+        rooms.push({roomID: roomID, movieID: movieID, users: []})
         socket.emit("send_roomID", {roomID: roomID})
     })
 
     socket.on("join_room", ({roomID, username, movieID}) => {
-        rooms.push({roomID: roomID, movieID: movieID, users: [{id: socket.id, username: username}]})
+        const room = rooms.find(room => room.roomID === roomID)
+        room.users.push({[socket.id]: username})
         socket.join(roomID)
-        socket.to(roomID).emit("new_user", {username: username, message: 'joined the party'})
+        socket.to(roomID).emit("new_event", {username: username, message: 'joined the party'})
     })
 
     socket.on("send_message", (messageData) => {
         socket.to(messageData.room).emit("receive_message", messageData)
     })
 
+    socket.on("on_play_pause", (roomID, username) => {
+        const user = findUser(socket)
+        socket.to(user.roomID).emit("handle_play_pause")
+        socket.to(user.roomID).emit("new_event", {username: user.username, message: 'paused the movie'})
+    })
+
     socket.on("disconnect", () => {
         try {
-            const user = rooms.find(room => room.users.find(user => user.id == socket.id))
-            socket.to(user.roomID).emit("left_user", {username: user.users[0].username, message: 'left the party'})
+            const user = findUser(socket)
+
+            rooms.find(room => {
+                if(room.roomID === user.roomID){
+                    room.users = room.users.filter((user) => !(socket.id in user))
+                }
+            })
+
+            socket.to(user.roomID).emit("left_user", {username: user.username, message: 'left the party'})
         } catch (error) {
             console.log(error)
         }
-        console.log(socket.id, "left")
     })
 })
 

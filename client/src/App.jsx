@@ -89,7 +89,6 @@ function App() {
 function RequireAuth({ children }) {
   const {isAuth, authed} = useContext(AuthContext);
   let location = useLocation();
-  console.log(location)
 
   isAuth()
   return authed ? children : <Navigate to='/auth' state={{ from: location.pathname }} replace />;

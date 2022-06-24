@@ -3,13 +3,15 @@ import { Stack, Text, AspectRatio } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 
 import {SocketContext} from "../contexts/SocketContext"
+import { AuthContext } from '../contexts/AuthContext'
 
 export default function MovieThumb({movie}) {
     const navigate = useNavigate()
+    const {username} = useContext(AuthContext);
     const {socket} = useContext(SocketContext);
 
     const handleClick = () => {
-        socket.emit("create_room")
+        socket.emit("create_room", movie.id, username)
         socket.on("send_roomID", ({roomID}) => {
             navigate(`/movie/${movie.id}/party/${roomID}`)
         })

@@ -1,11 +1,11 @@
-import React, {useState} from 'react'
+import React, {useState, useContext, useEffect} from 'react'
 import { VideoSeekSlider } from "react-video-seek-slider";
 import { Pause, Play, SpeakerSimpleHigh, SpeakerSimpleLow, SpeakerSimpleSlash } from 'phosphor-react'
 import { Group, Stack, Tooltip, Text, Slider, Button } from '@mantine/core'
 
 import "react-video-seek-slider/styles.css"
-import { useContext } from 'react';
 import { PlayerContext } from '../contexts/PlayerContext';
+import { SocketContext } from '../contexts/SocketContext';
 
 const StyledTooltip = ({children, label}) => {
     return(
@@ -30,6 +30,7 @@ export default function PlayerControls({
 }) {
     const [volumeOpen, setVolumeOpen] = useState(false);
 
+    const {socket} = useContext(SocketContext);
     const {controlVisible} = useContext(PlayerContext);
 
     function convertSeconds(seconds) {
