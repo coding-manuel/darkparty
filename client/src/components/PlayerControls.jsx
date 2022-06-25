@@ -25,7 +25,6 @@ export default function PlayerControls({
     onMute,
     onVolumeChange,
     onSeek,
-    onSeekUp,
     onSeekDown
 }) {
     const [volumeOpen, setVolumeOpen] = useState(false);
@@ -49,7 +48,7 @@ export default function PlayerControls({
     return (
         <Stack sx={{position: 'absolute', bottom: 0, width: '100%', height: '24px', padding: '0 16px 56px 16px'}}>
             <Stack sx={{transition: 'transform .2s ease-out, opacity .4s ease-out', opacity: !controlVisible ? 0 : 1, transform: !controlVisible && 'translate(0, 30px)'}} spacing={4}>
-            <div onMouseDown={onSeekDown} onMouseUp={onSeekUp}>
+            <div onMouseDown={onSeekDown}>
                 <VideoSeekSlider
                     max={duration}
                     currentTime={elapsedTime}
@@ -64,13 +63,13 @@ export default function PlayerControls({
             <Group spacing='md'>
                 {playing ?
                 <StyledTooltip label='Pause'>
-                    <Pause onClick={() => onPlayPause(true)} cursor='pointer' size={16} weight="fill" />
+                    <Pause onClick={() => onPlayPause(false)} cursor='pointer' size={16} weight="fill" />
                 </StyledTooltip>
                 :
                 <StyledTooltip label='Play'>
-                    <Play onClick={onPlayPause} cursor='pointer' size={16} weight="fill" />
+                    <Play onClick={() => onPlayPause(true)} cursor='pointer' size={16} weight="fill" />
                 </StyledTooltip>}
-                <Group onMouseOver={() => onPlayPause(false)} onMouseLeave={() => setVolumeOpen(false)}>
+                <Group onMouseOver={() => setVolumeOpen(true)} onMouseLeave={() => setVolumeOpen(false)}>
                     {muted ?
                     <StyledTooltip label='Unmute'>
                         <SpeakerSimpleSlash onClick={onMute} cursor='pointer' size={16} weight="fill" />

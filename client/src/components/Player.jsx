@@ -57,7 +57,7 @@ const Player = ({url, roomID}) => {
         }
     }
 
-    const handleSeekUp = () => {
+    const handleSeekUp = (seekTime) => {
         socket.emit("on_seek", seekTime)
         setPlayerState({...playerState, seeking: false, playing: true})
     }
@@ -115,7 +115,7 @@ const Player = ({url, roomID}) => {
         <Box onMouseMove={onMouseMove} sx={{height: '100%', backgroundColor: '#000', position: 'relative', flexGrow: 10}}>
             <Group spacing={24} sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 100, transition: 'opacity .2s ease-out', opacity: !controlVisible ? 0 : 1}}>
                 <Rewind size={32} weight="fill" cursor='pointer' onClick={handleSeekBack} />
-                {!playerState.playing ? <Play onClick={() => handlePlayPause(false)} cursor='pointer' size={36} weight="fill" /> : <Pause onClick={() => handlePlayPause(true)} cursor='pointer' size={36} weight="fill" />}
+                {!playerState.playing ? <Play onClick={() => handlePlayPause(true)} cursor='pointer' size={36} weight="fill" /> : <Pause onClick={() => handlePlayPause(false)} cursor='pointer' size={36} weight="fill" />}
                 <FastForward size={32} cursor='pointer' weight="fill" onClick={handleSeekForward} />
             </Group>
             <Group onClick={handleBack} spacing={4} sx={{position: 'absolute', top: 20, left: 20, transition: '.2s ease-out', opacity: !controlVisible ? 0 : 1, zIndex: 100, cursor: 'pointer', '&:hover': {gap: 6, borderBottom: '1px solid #ffffff'}}}>
@@ -128,6 +128,7 @@ const Player = ({url, roomID}) => {
                 onProgress={handleProgress}
                 controls={false}
                 style={{position: 'absolute'}}
+                onSeek={handleSeekUp}
                 volume={volume}
                 muted={playerState.muted}
                 height='100%'
@@ -145,7 +146,6 @@ const Player = ({url, roomID}) => {
 
                 onPlayPause={handlePlayPause}
                 onSeek={handleSeek}
-                onSeekUp={handleSeekUp}
                 onSeekDown={handleSeekDown}
                 onMute={handleMute}
                 onVolumeChange={handleVolumeChange}

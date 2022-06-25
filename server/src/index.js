@@ -74,6 +74,8 @@ function findUser (socket) {
             return room
         })
 
+        if(!room) return false
+
         const user = room.users.filter((user) => socket.id in user)
 
         return {roomID: room.roomID, username: user[0][socket.id]}
@@ -102,12 +104,21 @@ io.on("connection", (socket) => {
         socket.emit("send_roomID", {roomID: roomID})
     })
 
-    socket.on("join_room", ({roomID, username, movieID}) => {
+    socket.on("join_room", ({roomID, username, movieID}, callback) => {
         try {
             const room = rooms.find(room => room.roomID === roomID)
-            room.users.push({[socket.id]: username})
-            socket.join(roomID)
-            socket.to(roomID).emit("new_event", {username: username, message: 'joined the party'})
+            if(room){
+                room.users.push({[socket.id]: username})
+                socket.join(roomID)
+                socket.to(roomID).emit("new_event", {username: username, message: 'joined the party'})
+                callback({
+                    joined: true
+                });
+            }else{
+                callback({
+                    joined: false
+                });
+            }
         }
         catch(error){
             console.log(error)
@@ -121,7 +132,7 @@ io.on("connection", (socket) => {
     socket.on("on_play_pause", (isPlay) => {
         try {
             const user = findUser(socket)
-            socket.to(user.roomID).emit("handle_play_pause", isplay)
+            socket.to(user.roomID).emit("handle_play_pause", isPlay)
             socket.broadcast.to(user.roomID).emit("new_event", {username: user.username, message: isPlay ? 'played the movie' : 'paused the movie'})
         } catch (error) {
             console.log(error)
@@ -141,14 +152,14 @@ io.on("connection", (socket) => {
     socket.on("disconnect", () => {
         try {
             const user = findUser(socket)
-
-            rooms.find(room => {
-                if(room.roomID === user.roomID){
-                    room.users = room.users.filter((user) => !(socket.id in user))
-                }
-            })
-
-            socket.to(user.roomID).emit("left_user", {username: user.username, message: 'left the party'})
+            if(user){
+                rooms.find(room => {
+                    if(room.roomID === user.roomID){
+                        room.users = room.users.filter((user) => !(socket.id in user))
+                    }
+                })
+                socket.to(user.roomID).emit("left_user", {username: user.username, message: 'left the party'})
+            }
         } catch (error) {
             console.log(error)
         }
