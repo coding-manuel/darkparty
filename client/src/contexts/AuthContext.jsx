@@ -7,7 +7,7 @@ import { showNotification } from '@mantine/notifications';
 export const AuthContext = React.createContext()
 
 export const AuthProvider = ({children}) => {
-    const [authed, setAuthed] = useState(localStorage.getItem("authed") || false);
+    const [authed, setAuthed] = useState(JSON.parse(localStorage.getItem("authed")) || false);
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState(localStorage.getItem("username") || '');
     const navigate = useNavigate()
@@ -52,7 +52,7 @@ export const AuthProvider = ({children}) => {
         setLoading(true)
         axios.post("/auth/login", {email: values.email, password: values.password})
         .then(function (response){
-            localStorage.setItem("authed", true)
+            localStorage.setItem("authed", JSON.stringify(true))
             localStorage.setItem("username", response.data.username)
             setAuthed(true)
             navigate(from)
@@ -85,7 +85,7 @@ export const AuthProvider = ({children}) => {
     const signOut = () => {
         axios.post("/auth/logout")
         .then(function (response){
-            localStorage.setItem("authed", false)
+            localStorage.setItem("authed", JSON.stringify(false))
             localStorage.setItem("username", '')
             setAuthed(false)
             showNotification({
@@ -120,12 +120,17 @@ export const AuthProvider = ({children}) => {
         axios.post("/auth/isauthed")
         .then(res => {
             setAuthed(true)
-            localStorage.setItem("authed", true)
+            localStorage.setItem("authed", JSON.stringify(true))
             localStorage.setItem("username", res.data.username)
         })
         .catch(err => {
-            localStorage.setItem("authed", false)
+            localStorage.setItem("authed", JSON.stringify(false))
             setAuthed(false)
+            showNotification({
+                title: 'Session Timed Out',
+                message: 'Please Login Again',
+                styles: notificationStyles
+            })
         })
     }
 
