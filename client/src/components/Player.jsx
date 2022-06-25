@@ -32,9 +32,9 @@ const Player = ({url, roomID}) => {
 
     const playerRef = useRef(null)
 
-    const handlePlayPause = () => {
-        setPlayPause()
-        socket.emit("on_play_pause", roomID)
+    const handlePlayPause = (isPlay) => {
+        setPlayPause(isPlay)
+        socket.emit("on_play_pause", isPlay)
     }
 
     const handleProgress = (state) => {
@@ -58,6 +58,7 @@ const Player = ({url, roomID}) => {
     }
 
     const handleSeekUp = () => {
+        socket.emit("on_seek", seekTime)
         setPlayerState({...playerState, seeking: false, playing: true})
     }
 
@@ -85,8 +86,16 @@ const Player = ({url, roomID}) => {
 
     useEffect(()=>{
         if(socket){
-            socket.on("handle_play_pause", () => {
-                setPlayPause()
+            socket.on("handle_play_pause", (isPlay) => {
+                setPlayPause(isPlay)
+            })
+        }
+    }, [socket, playerState])
+
+    useEffect(()=>{
+        if(socket){
+            socket.on("handle_seek", (seekTime) => {
+                playerRef.current.seekTo(seekTime, "seconds");
             })
         }
     }, [socket, playerState])
@@ -106,7 +115,7 @@ const Player = ({url, roomID}) => {
         <Box onMouseMove={onMouseMove} sx={{height: '100%', backgroundColor: '#000', position: 'relative', flexGrow: 10}}>
             <Group spacing={24} sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 100, transition: 'opacity .2s ease-out', opacity: !controlVisible ? 0 : 1}}>
                 <Rewind size={32} weight="fill" cursor='pointer' onClick={handleSeekBack} />
-                {!playerState.playing ? <Play onClick={handlePlayPause} cursor='pointer' size={36} weight="fill" /> : <Pause onClick={handlePlayPause} cursor='pointer' size={36} weight="fill" />}
+                {!playerState.playing ? <Play onClick={() => handlePlayPause(false)} cursor='pointer' size={36} weight="fill" /> : <Pause onClick={() => handlePlayPause(true)} cursor='pointer' size={36} weight="fill" />}
                 <FastForward size={32} cursor='pointer' weight="fill" onClick={handleSeekForward} />
             </Group>
             <Group onClick={handleBack} spacing={4} sx={{position: 'absolute', top: 20, left: 20, transition: '.2s ease-out', opacity: !controlVisible ? 0 : 1, zIndex: 100, cursor: 'pointer', '&:hover': {gap: 6, borderBottom: '1px solid #ffffff'}}}>

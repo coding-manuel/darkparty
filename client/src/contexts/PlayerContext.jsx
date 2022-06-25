@@ -5,10 +5,8 @@ export const PlayerContext = React.createContext()
 export const PlayerProvider = ({children}) => {
     const [playerState, setPlayerState] = useState({
         url: null,
-        pip: false,
-        playing: false,
+        playing: true,
         seeking: false,
-        light: true,
         muted: false,
         played: 0,
         loaded: 0,
@@ -33,8 +31,8 @@ export const PlayerProvider = ({children}) => {
         }, 1500))
     }
 
-    const setPlayPause = () => {
-        setPlayerState({...playerState, playing: !playerState.playing})
+    const setPlayPause = (isPlay) => {
+        setPlayerState({...playerState, playing: isPlay})
     }
 
     const setProgress = (state) => {

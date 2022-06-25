@@ -18,10 +18,10 @@ export default function PlayerControls({
     volume,
     muted,
     playing,
-    onPlayPause,
     duration,
     elapsedTime,
     loadedTime,
+    onPlayPause,
     onMute,
     onVolumeChange,
     onSeek,
@@ -64,13 +64,13 @@ export default function PlayerControls({
             <Group spacing='md'>
                 {playing ?
                 <StyledTooltip label='Pause'>
-                    <Pause onClick={onPlayPause} cursor='pointer' size={16} weight="fill" />
+                    <Pause onClick={() => onPlayPause(true)} cursor='pointer' size={16} weight="fill" />
                 </StyledTooltip>
                 :
                 <StyledTooltip label='Play'>
                     <Play onClick={onPlayPause} cursor='pointer' size={16} weight="fill" />
                 </StyledTooltip>}
-                <Group onMouseOver={() => setVolumeOpen(true)} onMouseLeave={() => setVolumeOpen(false)}>
+                <Group onMouseOver={() => onPlayPause(false)} onMouseLeave={() => setVolumeOpen(false)}>
                     {muted ?
                     <StyledTooltip label='Unmute'>
                         <SpeakerSimpleSlash onClick={onMute} cursor='pointer' size={16} weight="fill" />
