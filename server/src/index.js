@@ -15,7 +15,7 @@ const pool = require('./utils/db');
 require('dotenv').config()
 
 const rooms = []
-//rooms -> [{roomID, movieID, state = {playing, elapsedTime} users = [socketID: username]}]
+//rooms -> [{roomID, movieID, state = {playing, elapsedTime, allPlayersReady}, users = [socketID: username]}]
 const app = express()
 const port = 9000
 
@@ -78,7 +78,7 @@ function findUser (socket) {
 
         const user = room.users.filter((user) => socket.id in user)
 
-        return {roomID: room.roomID, username: user[0][socket.id]}
+        return {roomID: room.roomID, owner: room.owner, username: user[0][socket.id]}
     } catch (error) {
         console.log(error)
     }
@@ -98,9 +98,9 @@ function convertSeconds(seconds) {
 }
 
 io.on("connection", (socket) => {
-    socket.on("create_room", (movieID, username) => {
+    socket.on("create_room", (movieID) => {
         const roomID = uuidv4()
-        rooms.push({roomID: roomID, movieID: movieID, users: []})
+        rooms.push({roomID: roomID, movieID: movieID, state: {playing: false, elapsedTime: 0}, users: []})
         socket.emit("send_roomID", {roomID: roomID})
     })
 
@@ -110,6 +110,8 @@ io.on("connection", (socket) => {
             if(room){
                 room.users.push({[socket.id]: username})
                 socket.join(roomID)
+
+                socket.to(socket.id).emit("set_player_state", {state: room.state})
                 socket.to(roomID).emit("new_event", {username: username, message: 'joined the party'})
                 callback({
                     joined: true

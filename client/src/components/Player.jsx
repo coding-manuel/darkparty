@@ -16,14 +16,7 @@ const Player = ({url, roomID}) => {
         setVolume,
         handleMouseMove,
         controlVisible,
-        setVolumeChange,
-        setMute,
-        setSeekBack,
-        setSeekDown,
-        setSeekUp,
-        setSeekForward,
-        setProgress,
-        setSeek,
+        setPlayerReady,
         setPlayPause,
     } = useContext(PlayerContext);
     const {socket} = useContext(SocketContext);
@@ -82,6 +75,14 @@ const Player = ({url, roomID}) => {
         navigate('/home')
     }
 
+    const handlePlayerReady = () => {
+        setPlayerReady()
+    }
+
+    const handleBuffer = () => {
+        console.log("chicken")
+    }
+
     const duration = playerRef && playerRef.current ? playerRef.current.getDuration() : '00:00'
 
     useEffect(()=>{
@@ -123,17 +124,21 @@ const Player = ({url, roomID}) => {
                 <Text>Back</Text>
             </Group>
             <ReactPlayer
+                url={"https://d15jncv4xxvixg.cloudfront.net/l4l2q6610.uofdezfuo5d.mp4.mp4"}
                 ref={playerRef}
-                playing={playerState.playing}
-                onProgress={handleProgress}
-                controls={false}
                 style={{position: 'absolute'}}
-                onSeek={handleSeekUp}
-                volume={volume}
-                muted={playerState.muted}
                 height='100%'
                 width='100%'
-                url={"https://d15jncv4xxvixg.cloudfront.net/l4l2q6610.uofdezfuo5d.mp4.mp4"}
+
+                playing={playerState.playing}
+                controls={false}
+                volume={volume}
+                muted={playerState.muted}
+
+                onProgress={handleProgress}
+                onSeek={handleSeekUp}
+                onReady={handlePlayerReady}
+                onBuffer={handleBuffer}
             />
             <PlayerControls
                 muted={playerState.muted}

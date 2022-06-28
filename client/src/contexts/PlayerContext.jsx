@@ -5,8 +5,9 @@ export const PlayerContext = React.createContext()
 export const PlayerProvider = ({children}) => {
     const [playerState, setPlayerState] = useState({
         url: null,
-        playing: true,
+        playing: false,
         seeking: false,
+        ready: false,
         muted: false,
         played: 0,
         loaded: 0,
@@ -41,20 +42,6 @@ export const PlayerProvider = ({children}) => {
         }
     }
 
-    const setSeekBack = () => {
-        playerRef.current.seekTo(playerRef.current.getCurrentTime() - 10);
-    }
-
-    const setSeekForward = () => {
-        playerRef.current.seekTo(playerRef.current.getCurrentTime() + 10);
-    }
-
-    const setSeek = (seekTime) => {
-        if(!playerState.seeking){
-            playerRef.current.seekTo(seekTime, "seconds");
-        }
-    }
-
     const setSeekUp = () => {
         setPlayerState({...playerState, seeking: false, playing: true})
     }
@@ -71,23 +58,26 @@ export const PlayerProvider = ({children}) => {
         setVolume(newValue)
     }
 
+    const setPlayerReady = () => {
+        setPlayerState({...playerState, ready: true})
+
+    }
+
     return(
         <PlayerContext.Provider value={{
             setVolumeChange,
             setMute,
-            setSeekBack,
             setSeekDown,
             setSeekUp,
-            setSeekForward,
             setProgress,
-            setSeek,
             setPlayPause,
-            playerState,
             setPlayerState,
-            volume,
             setVolume,
+            setPlayerReady,
+            handleMouseMove,
+            playerState,
+            volume,
             controlVisible,
-            handleMouseMove
         }}>
             {children}
         </PlayerContext.Provider>
