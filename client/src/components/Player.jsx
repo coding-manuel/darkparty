@@ -1,5 +1,5 @@
 import React, {useRef, useState, useContext, useEffect} from 'react';
-import { Box, Group, Text } from '@mantine/core';
+import { Box, Group, Text, Center, Stack, ScrollArea, Title, Tabs } from '@mantine/core';
 import { ArrowLeft, FastForward, Pause, Play, Rewind } from 'phosphor-react';
 import ReactPlayer from 'react-player/file'
 
@@ -7,8 +7,13 @@ import PlayerControls from './PlayerControls';
 import { PlayerContext } from '../contexts/PlayerContext';
 import { useNavigate } from 'react-router-dom';
 import { SocketContext } from '../contexts/SocketContext';
+import { axios } from '../utils/axios';
+import MovieThumb from './MovieThumb';
 
 const Player = ({url, roomID}) => {
+    const [allMovies, setAllMovies] = useState([]);
+    const [activeTab, setActiveTab] = useState(0);
+
     const {
         playerState,
         setPlayerState,
@@ -79,6 +84,10 @@ const Player = ({url, roomID}) => {
         setPlayerReady()
     }
 
+    const onChange = (active, tabKey) => {
+        setActiveTab(active);
+    };
+
     const duration = playerRef && playerRef.current ? playerRef.current.getDuration() : '00:00'
 
     useEffect(()=>{
@@ -108,9 +117,48 @@ const Player = ({url, roomID}) => {
             setPlayerState({...playerState, muted: false})
     }, [volume])
 
+    useEffect(() => {
+        axios.get("/movie/getallmovie")
+        .then(res => setAllMovies(res.data))
+    }, []);
+
     return (
-        <Box onMouseMove={onMouseMove} sx={{height: '100%', backgroundColor: '#000', position: 'relative', flexGrow: 10}}>
-            <Group spacing={24} sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 100, transition: 'opacity .2s ease-out', opacity: !controlVisible ? 0 : 1}}>
+        <Box onMouseMove={onMouseMove} sx={{backgroundColor: '#000', position: 'relative', flexGrow: 2}}>
+            <Tabs active={activeTab} onTabChange={onChange} position='center' variant="pills" m={16} sx={{height: '100%'}}>
+                <Tabs.Tab label="Movies">
+                    <Stack>
+                        <ScrollArea scrollbarSize={4} sx={{height: '85vh'}}>
+                            <Group grow position='center'>
+                                {allMovies.length !== 0 && allMovies.map(movie => {
+                                return (
+                                    <MovieThumb movie={movie} />
+                                )
+                                })}
+                                {allMovies.length !== 0 && allMovies.map(movie => {
+                                return (
+                                    <MovieThumb movie={movie} />
+                                )
+                                })}
+                                {allMovies.length !== 0 && allMovies.map(movie => {
+                                return (
+                                    <MovieThumb movie={movie} />
+                                )
+                                })}
+                                {allMovies.length !== 0 && allMovies.map(movie => {
+                                return (
+                                    <MovieThumb movie={movie} />
+                                )
+                                })}
+                            </Group>
+                        </ScrollArea>
+                    </Stack>
+                </Tabs.Tab>
+                <Tabs.Tab label="Youtube">
+                    <Stack>
+                    </Stack>
+                </Tabs.Tab>
+            </Tabs>
+            {/* <Group spacing={24} sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 100, transition: 'opacity .2s ease-out', opacity: !controlVisible ? 0 : 1}}>
                 <Rewind size={32} weight="fill" cursor='pointer' onClick={handleSeekBack} />
                 {!playerState.playing ? <Play onClick={() => handlePlayPause(true)} cursor='pointer' size={36} weight="fill" /> : <Pause onClick={() => handlePlayPause(false)} cursor='pointer' size={36} weight="fill" />}
                 <FastForward size={32} cursor='pointer' weight="fill" onClick={handleSeekForward} />
@@ -149,7 +197,7 @@ const Player = ({url, roomID}) => {
                 onSeekDown={handleSeekDown}
                 onMute={handleMute}
                 onVolumeChange={handleVolumeChange}
-            />
+            /> */}
         </Box>
     );
 }
