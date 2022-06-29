@@ -111,10 +111,10 @@ io.on("connection", (socket) => {
                 room.users.push({[socket.id]: username})
                 socket.join(roomID)
 
-                socket.to(socket.id).emit("set_player_state", {state: room.state})
                 socket.to(roomID).emit("new_event", {username: username, message: 'joined the party'})
                 callback({
-                    joined: true
+                    joined: true,
+                    state: room.state
                 });
             }else{
                 callback({

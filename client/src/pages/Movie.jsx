@@ -7,12 +7,14 @@ import {SocketContext} from "../contexts/SocketContext"
 import Player from '../components/Player';
 import ChatBox from '../components/ChatBox';
 import { AuthContext } from '../contexts/AuthContext';
+import { PlayerContext } from '../contexts/PlayerContext';
 
 export default function Movie() {
     const [movieDetails, setMovieDetails] = useState(null);
     const [joined, setJoined] = useState(null);
 
     const {socket} = useContext(SocketContext);
+    const {setPlayerInit} = useContext(PlayerContext);
     const {username} = useContext(AuthContext);
     const {id, roomid} = useParams()
     const navigate = useNavigate()
@@ -24,8 +26,9 @@ export default function Movie() {
 
     useEffect(() => {
         if(roomid && socket){
-            socket.emit("join_room", {roomID: roomid, username: username, movieID: id}, ({joined}) => {
+            socket.emit("join_room", {roomID: roomid, username: username, movieID: id}, ({joined, state}) => {
                 setJoined(joined)
+                setPlayerInit(state)
             })
         }
     }, [roomid, socket])

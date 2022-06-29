@@ -60,7 +60,11 @@ export const PlayerProvider = ({children}) => {
 
     const setPlayerReady = () => {
         setPlayerState({...playerState, ready: true})
+    }
 
+    const setPlayerInit = (state) => {
+        console.log(state)
+        // setPlayerState({...playerState, playing})
     }
 
     return(
@@ -73,6 +77,7 @@ export const PlayerProvider = ({children}) => {
             setPlayPause,
             setPlayerState,
             setVolume,
+            setPlayerInit,
             setPlayerReady,
             handleMouseMove,
             playerState,

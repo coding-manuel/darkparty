@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { axios } from '../utils/axios';
-import { Group } from '@mantine/core'
+import { Group, Button, Stack, Divider, Text } from '@mantine/core'
 import MovieThumb from '../components/MovieThumb';
 
 export default function Home() {
@@ -13,13 +13,21 @@ export default function Home() {
   }, []);
 
   return (
-    <Group position='center' grow>
-      {allMovies.length !== 0 && allMovies.map(movie => {
-        return (
-          <MovieThumb movie={movie} />
-        )
-      })}
-    </Group>
-
+    <Stack>
+      <Group position='center'>
+        <Button>Create Room</Button>
+      </Group>
+      <Divider></Divider>
+      <Text>
+        Browse Movies
+      </Text>
+      <Group position='center' grow>
+        {allMovies.length !== 0 && allMovies.map(movie => {
+          return (
+            <MovieThumb movie={movie} />
+          )
+        })}
+      </Group>
+    </Stack>
   )
 }

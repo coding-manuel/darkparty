@@ -52,7 +52,7 @@ const Player = ({url, roomID}) => {
 
     const handleSeekUp = (seekTime) => {
         socket.emit("on_seek", seekTime)
-        setPlayerState({...playerState, seeking: false, playing: true})
+        setPlayerState({...playerState, seeking: false})
     }
 
     const handleSeekDown = () => {
@@ -79,10 +79,6 @@ const Player = ({url, roomID}) => {
         setPlayerReady()
     }
 
-    const handleBuffer = () => {
-        console.log("chicken")
-    }
-
     const duration = playerRef && playerRef.current ? playerRef.current.getDuration() : '00:00'
 
     useEffect(()=>{
@@ -96,7 +92,7 @@ const Player = ({url, roomID}) => {
     useEffect(()=>{
         if(socket){
             socket.on("handle_seek", (seekTime) => {
-                playerRef.current.seekTo(seekTime, "seconds");
+                handleSeek(seekTime);
             })
         }
     }, [socket, playerState])
@@ -138,7 +134,6 @@ const Player = ({url, roomID}) => {
                 onProgress={handleProgress}
                 onSeek={handleSeekUp}
                 onReady={handlePlayerReady}
-                onBuffer={handleBuffer}
             />
             <PlayerControls
                 muted={playerState.muted}
