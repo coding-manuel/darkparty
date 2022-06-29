@@ -10,6 +10,13 @@ export default function MovieThumb({movie}) {
     const {username} = useContext(AuthContext);
     const {socket} = useContext(SocketContext);
 
+    // const handleClick = () => {
+    //     socket.emit("create_room", movie.id, username)
+    //     socket.on("send_roomID", ({roomID}) => {
+    //         navigate(`/movie/${movie.id}/party/${roomID}`)
+    //     })
+    // }
+
     const handleClick = () => {
         socket.emit("create_room", movie.id, username)
         socket.on("send_roomID", ({roomID}) => {

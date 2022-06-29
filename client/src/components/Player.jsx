@@ -1,6 +1,6 @@
 import React, {useRef, useState, useContext, useEffect} from 'react';
-import { Box, Group, Text, Center, Stack, ScrollArea, Title, Tabs } from '@mantine/core';
-import { ArrowLeft, FastForward, Pause, Play, Rewind } from 'phosphor-react';
+import { Box, Group, Text, Center, Stack, ScrollArea, Title, Tabs, Button, ActionIcon } from '@mantine/core';
+import { ArrowLeft, FastForward, Pause, Play, Rewind, X } from 'phosphor-react';
 import ReactPlayer from 'react-player/file'
 
 import PlayerControls from './PlayerControls';
@@ -16,13 +16,15 @@ const Player = ({url, roomID}) => {
 
     const {
         playerState,
-        setPlayerState,
+        selecting,
         volume,
-        setVolume,
-        handleMouseMove,
         controlVisible,
+        handleMouseMove,
+        setPlayerState,
+        setVolume,
         setPlayerReady,
         setPlayPause,
+        setSelecting,
     } = useContext(PlayerContext);
     const {socket} = useContext(SocketContext);
 
@@ -88,6 +90,10 @@ const Player = ({url, roomID}) => {
         setActiveTab(active);
     };
 
+    const handleCloseClick = () => {
+        setSelecting(false)
+    }
+
     const duration = playerRef && playerRef.current ? playerRef.current.getDuration() : '00:00'
 
     useEffect(()=>{
@@ -124,80 +130,87 @@ const Player = ({url, roomID}) => {
 
     return (
         <Box onMouseMove={onMouseMove} sx={{backgroundColor: '#000', position: 'relative', flexGrow: 2}}>
-            <Tabs active={activeTab} onTabChange={onChange} position='center' variant="pills" m={16} sx={{height: '100%'}}>
-                <Tabs.Tab label="Movies">
-                    <Stack>
-                        <ScrollArea scrollbarSize={4} sx={{height: '85vh'}}>
-                            <Group grow position='center'>
-                                {allMovies.length !== 0 && allMovies.map(movie => {
-                                return (
-                                    <MovieThumb movie={movie} />
-                                )
-                                })}
-                                {allMovies.length !== 0 && allMovies.map(movie => {
-                                return (
-                                    <MovieThumb movie={movie} />
-                                )
-                                })}
-                                {allMovies.length !== 0 && allMovies.map(movie => {
-                                return (
-                                    <MovieThumb movie={movie} />
-                                )
-                                })}
-                                {allMovies.length !== 0 && allMovies.map(movie => {
-                                return (
-                                    <MovieThumb movie={movie} />
-                                )
-                                })}
-                            </Group>
-                        </ScrollArea>
-                    </Stack>
-                </Tabs.Tab>
-                <Tabs.Tab label="Youtube">
-                    <Stack>
-                    </Stack>
-                </Tabs.Tab>
-            </Tabs>
-            {/* <Group spacing={24} sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 100, transition: 'opacity .2s ease-out', opacity: !controlVisible ? 0 : 1}}>
-                <Rewind size={32} weight="fill" cursor='pointer' onClick={handleSeekBack} />
-                {!playerState.playing ? <Play onClick={() => handlePlayPause(true)} cursor='pointer' size={36} weight="fill" /> : <Pause onClick={() => handlePlayPause(false)} cursor='pointer' size={36} weight="fill" />}
-                <FastForward size={32} cursor='pointer' weight="fill" onClick={handleSeekForward} />
-            </Group>
-            <Group onClick={handleBack} spacing={4} sx={{position: 'absolute', top: 20, left: 20, transition: '.2s ease-out', opacity: !controlVisible ? 0 : 1, zIndex: 100, cursor: 'pointer', '&:hover': {gap: 6, borderBottom: '1px solid #ffffff'}}}>
-                <ArrowLeft size={16} weight="fill" />
-                <Text>Back</Text>
-            </Group>
-            <ReactPlayer
-                url={"https://d15jncv4xxvixg.cloudfront.net/l4l2q6610.uofdezfuo5d.mp4.mp4"}
-                ref={playerRef}
-                style={{position: 'absolute'}}
-                height='100%'
-                width='100%'
+            {selecting ?
+            <Box sx={{width: '100%', position: 'relative'}}>
+                <ActionIcon sx={{position: 'absolute', right: 30}} onClick={handleCloseClick}><X size={16} weight="fill" /></ActionIcon>
+                <Tabs active={activeTab} onTabChange={onChange} position='center' variant="pills" m={16} sx={{height: '100%'}}>
+                    <Tabs.Tab label="Movies">
+                        <Stack>
+                            <ScrollArea scrollbarSize={4} sx={{height: '85vh'}}>
+                                <Group grow position='center'>
+                                    {allMovies.length !== 0 && allMovies.map(movie => {
+                                    return (
+                                        <MovieThumb movie={movie} />
+                                    )
+                                    })}
+                                    {allMovies.length !== 0 && allMovies.map(movie => {
+                                    return (
+                                        <MovieThumb movie={movie} />
+                                    )
+                                    })}
+                                    {allMovies.length !== 0 && allMovies.map(movie => {
+                                    return (
+                                        <MovieThumb movie={movie} />
+                                    )
+                                    })}
+                                    {allMovies.length !== 0 && allMovies.map(movie => {
+                                    return (
+                                        <MovieThumb movie={movie} />
+                                    )
+                                    })}
+                                </Group>
+                            </ScrollArea>
+                        </Stack>
+                    </Tabs.Tab>
+                    <Tabs.Tab label="Youtube">
+                        <Stack>
+                        </Stack>
+                    </Tabs.Tab>
+                </Tabs>
+            </Box> :
+            <>
+                <Group spacing={24} sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 100, transition: 'opacity .2s ease-out', opacity: !controlVisible ? 0 : 1}}>
+                    <Rewind size={32} weight="fill" cursor='pointer' onClick={handleSeekBack} />
+                    {!playerState.playing ? <Play onClick={() => handlePlayPause(true)} cursor='pointer' size={36} weight="fill" /> : <Pause onClick={() => handlePlayPause(false)} cursor='pointer' size={36} weight="fill" />}
+                    <FastForward size={32} cursor='pointer' weight="fill" onClick={handleSeekForward} />
+                </Group>
+                <Group onClick={handleBack} spacing={4} sx={{position: 'absolute', top: 20, left: 20, transition: '.2s ease-out', opacity: !controlVisible ? 0 : 1, zIndex: 100, cursor: 'pointer', '&:hover': {gap: 6, borderBottom: '1px solid #ffffff'}}}>
+                    <ArrowLeft size={16} weight="fill" />
+                    <Text>Back</Text>
+                </Group>
+                <ReactPlayer
+                    url={"https://d15jncv4xxvixg.cloudfront.net/l4l2q6610.uofdezfuo5d.mp4.mp4"}
+                    ref={playerRef}
+                    style={{position: 'absolute'}}
+                    height='100%'
+                    width='100%'
 
-                playing={playerState.playing}
-                controls={false}
-                volume={volume}
-                muted={playerState.muted}
+                    playing={playerState.playing}
+                    controls={false}
+                    volume={volume}
+                    muted={playerState.muted}
 
-                onProgress={handleProgress}
-                onSeek={handleSeekUp}
-                onReady={handlePlayerReady}
-            />
-            <PlayerControls
-                muted={playerState.muted}
-                volume={volume}
-                playing={playerState.playing}
+                    onProgress={handleProgress}
+                    onSeek={handleSeekUp}
+                    onReady={handlePlayerReady}
+                />
+                <PlayerControls
+                    muted={playerState.muted}
+                    volume={volume}
+                    playing={playerState.playing}
 
-                duration={playerState.duration}
-                elapsedTime={playerState.elapsedTime}
-                loadedTime={playerState.loadedTime}
+                    duration={playerState.duration}
+                    elapsedTime={playerState.elapsedTime}
+                    loadedTime={playerState.loadedTime}
 
-                onPlayPause={handlePlayPause}
-                onSeek={handleSeek}
-                onSeekDown={handleSeekDown}
-                onMute={handleMute}
-                onVolumeChange={handleVolumeChange}
-            /> */}
+                    onPlayPause={handlePlayPause}
+                    onSeek={handleSeek}
+                    onSeekDown={handleSeekDown}
+                    onMute={handleMute}
+                    onVolumeChange={handleVolumeChange}
+                />
+            </>
+            }
         </Box>
     );
 }

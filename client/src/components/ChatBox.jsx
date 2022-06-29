@@ -52,7 +52,7 @@ const ChatBox = ({roomID, movieID, username}) => {
     const [messageValue, setMessageValue] = useState('');
     const [messages, setMessages] = useState([]);
 
-    const {controlVisible} = useContext(PlayerContext);
+    const {controlVisible, selecting} = useContext(PlayerContext);
     const {socket} = useContext(SocketContext);
 
     const handleShareLink = () => {
@@ -111,7 +111,7 @@ const ChatBox = ({roomID, movieID, username}) => {
 
     return (
         <>
-            <ActionIcon onClick={() => setChatOpen(!chatOpen)} sx={{position: 'absolute', background: '#1A1B1E', borderRadius: '4px 0 0 4px', border: 'none', top: '50%', right: chatOpen ? 300 : 0, transform: 'translate(0, -50%)', "&:active": {transform: 'translate(0, -50%)'}, opacity: controlVisible ? 1 : 0}}>
+            <ActionIcon onClick={() => setChatOpen(!chatOpen)} sx={{position: 'absolute', background: '#1A1B1E', borderRadius: '4px 0 0 4px', border: 'none', top: '50%', right: chatOpen ? 300 : 0, transform: 'translate(0, -50%)', "&:active": {transform: 'translate(0, -50%)'}, opacity: controlVisible || selecting ? 1 : 0}}>
                 <ArrowFatRight size={16} weight="fill" style={{transform : !chatOpen && 'rotate(180deg)', transition: '.2s ease-out'}} />
             </ActionIcon>
             <Stack spacing={0} sx={{height: '100vh', flex: '0 0 300px', display: !chatOpen && 'none', opacity: chatOpen ? 1 : 0, transition: 'transform .3s ease-out, opacity .2s ease-out'}}>

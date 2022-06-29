@@ -17,8 +17,9 @@ export const PlayerProvider = ({children}) => {
         playbackRate: 1.0,
         loop: false
     });
+    const [selecting, setSelecting] = useState(true);
     const [volume, setVolume] = useState(1);
-    const [controlVisible, setControlVisible] = useState(false);
+    const [controlVisible, setControlVisible] = useState(true);
     const [timer, setTimer] = useState(null);
 
     const handleMouseMove = () => {
@@ -29,7 +30,7 @@ export const PlayerProvider = ({children}) => {
             setControlVisible(true)
         setTimer(setTimeout(() => {
             if(!playerState.seeking) setControlVisible(false)
-        }, 1500))
+        }, 2500))
     }
 
     const setPlayPause = (isPlay) => {
@@ -78,8 +79,11 @@ export const PlayerProvider = ({children}) => {
             setPlayerState,
             setVolume,
             setPlayerInit,
+            setSelecting,
             setPlayerReady,
             handleMouseMove,
+
+            selecting,
             playerState,
             volume,
             controlVisible,

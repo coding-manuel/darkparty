@@ -38,7 +38,7 @@ export default function Movie() {
             <LoadingOverlay visible={true} />
         :
             joined ?
-                <Box sx={{height: '100vh', width: '100vw', margin: 0, display: 'flex'}}>
+                <Box sx={{height: '100vh', width: '100vw', overflow: 'hidden', margin: 0, display: 'flex'}}>
                     <Player roomID={roomid}/>
                     <ChatBox roomID={roomid} movieID={id} username={username} />
                 </Box>:
