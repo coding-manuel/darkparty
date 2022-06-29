@@ -60,7 +60,7 @@ export default function PlayerControls({
                     limitTimeTooltipBySides
                 />
             </div>
-            <Group spacing='md'>
+            <Group spacing='md' onMouseLeave={() => setVolumeOpen(false)}>
                 {playing ?
                 <StyledTooltip label='Pause'>
                     <Pause onClick={() => onPlayPause(false)} cursor='pointer' size={16} weight="fill" />
@@ -69,7 +69,7 @@ export default function PlayerControls({
                 <StyledTooltip label='Play'>
                     <Play onClick={() => onPlayPause(true)} cursor='pointer' size={16} weight="fill" />
                 </StyledTooltip>}
-                <Group onMouseOver={() => setVolumeOpen(true)} onMouseLeave={() => setVolumeOpen(false)}>
+                <Group onMouseOver={() => setVolumeOpen(true)}>
                     {muted ?
                     <StyledTooltip label='Unmute'>
                         <SpeakerSimpleSlash onClick={onMute} cursor='pointer' size={16} weight="fill" />
