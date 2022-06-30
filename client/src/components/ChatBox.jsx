@@ -8,6 +8,7 @@ import ReactTimeAgo from 'react-time-ago'
 import { notificationStyles } from '../globalStyles';
 import {SocketContext} from "../contexts/SocketContext"
 import { PlayerContext } from '../contexts/PlayerContext';
+import { MessageContext } from '../contexts/MessageContext';
 
 const StyledTooltip = ({children, label}) => {
     return(
@@ -50,10 +51,10 @@ const StyledMessage = ({me, message, username, time}) => {
 const ChatBox = ({roomID, movieID, username}) => {
     const [chatOpen, setChatOpen] = useState(true);
     const [messageValue, setMessageValue] = useState('');
-    const [messages, setMessages] = useState([]);
 
     const {controlVisible, selecting} = useContext(PlayerContext);
     const {socket} = useContext(SocketContext);
+    const {messages, setMessages} = useContext(MessageContext);
 
     const handleShareLink = () => {
         navigator.clipboard.writeText(`http://localhost:3000/room/${roomID}`)
@@ -84,30 +85,6 @@ const ChatBox = ({roomID, movieID, username}) => {
             setMessageValue("")
         }
     }
-
-    useEffect(() => {
-        if(socket){
-            socket.on("receive_message", (messageData) => {
-                setMessages(message => [...message, messageData])
-            })
-        }
-    }, [socket]);
-
-    useEffect(() => {
-        if(socket){
-            socket.on("new_event", (data) => {
-                setMessages(event => [...event, data])
-            })
-        }
-    }, [socket]);
-
-    useEffect(() => {
-        if(socket){
-            socket.on("left_user", (data) => {
-                setMessages(event => [...event, data])
-            })
-        }
-    }, [socket]);
 
     return (
         <>

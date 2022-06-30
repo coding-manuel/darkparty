@@ -8,6 +8,7 @@ import globalStyles from './globalStyles';
 import { AuthContext, AuthProvider } from './contexts/AuthContext';
 import { PlayerProvider } from './contexts/PlayerContext';
 import { SocketProvider } from './contexts/SocketContext';
+import { MessageProvider } from './contexts/MessageContext';
 
 import Home from './pages/Home';
 import Auth from './pages/Auth';
@@ -69,6 +70,7 @@ function App() {
           <SocketProvider>
             <AuthProvider>
               <PlayerProvider>
+                <MessageProvider>
                   <Routes>
                       <Route path='/home' element={<RequireAuth><Layout><Home /></Layout></RequireAuth>} />
                       <Route path='/upload' element={<RequireAuth><Layout><Upload /></Layout></RequireAuth>} />
@@ -78,6 +80,7 @@ function App() {
                       <Route path='/auth' element={<Auth />} />
                       <Route path='*' element={<Navigate to='/home' />} />
                   </Routes>
+                </MessageProvider>
               </PlayerProvider>
             </AuthProvider>
           </SocketProvider>

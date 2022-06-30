@@ -108,6 +108,7 @@ const Player = ({url, roomID}) => {
         if(socket){
             socket.on("send_player", ({state}) => {
                 setPlayerState(playerState => ({...playerState, url: state.url, mode: state.mode}))
+
             })
         }
     }, [socket, playerState])
