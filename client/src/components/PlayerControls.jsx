@@ -25,12 +25,14 @@ export default function PlayerControls({
     onMute,
     onVolumeChange,
     onSeek,
-    onSeekDown
+    onSeekDown,
+    onSeekUp
 }) {
     const [volumeOpen, setVolumeOpen] = useState(false);
+    const [seekedTime, setSeekedTime] = useState(0);
 
     const {socket} = useContext(SocketContext);
-    const {controlVisible, setSelecting} = useContext(PlayerContext);
+    const {controlVisible, setSelecting, setOnControl} = useContext(PlayerContext);
 
     function convertSeconds(seconds) {
         var convert = function(x) { return (x < 10) ? "0"+x : x; }
@@ -45,15 +47,20 @@ export default function PlayerControls({
             return hours + ":" + minutes + ":" + second
     }
 
+    const handleSeek = (seek) => {
+        setSeekedTime(seek)
+        onSeek(seek)
+    }
+
     return (
-        <Stack sx={{position: 'absolute', bottom: 0, width: '100%', height: '24px', padding: '0 16px 56px 16px'}}>
+        <Stack onMouseOver={() => setOnControl(true)} onMouseLeave={() => setOnControl(false)} sx={{position: 'absolute', bottom: 0, width: '100%', height: '24px', padding: '0 16px 56px 16px'}}>
             <Stack sx={{transition: 'transform .2s ease-out, opacity .4s ease-out', opacity: !controlVisible ? 0 : 1, transform: !controlVisible && 'translate(0, 30px)'}} spacing={4}>
-            <div onMouseDown={onSeekDown}>
+            <div onMouseDown={onSeekDown} onMouseUp={onSeekUp}>
                 <VideoSeekSlider
                     max={duration}
                     currentTime={elapsedTime}
                     progress={loadedTime}
-                    onChange={onSeek}
+                    onChange={handleSeek}
                     offset={0}
                     secondsPrefix="00:00:"
                     minutesPrefix="00:"

@@ -6,26 +6,30 @@ import { SocketContext } from "./SocketContext";
 export const PlayerContext = React.createContext()
 
 export const PlayerProvider = ({children}) => {
+    const [seeking, setSeeking] = useState(false);
+    const [selecting, setSelecting] = useState(true);
+    const [volume, setVolume] = useState(1);
+    const [controlVisible, setControlVisible] = useState(true);
+    const [timer, setTimer] = useState(null);
+    const [onControl, setOnControl] = useState(false);
+    const [roomID, setRoomID] = useState(null);
+    const [ready, setReady] = useState(false);
     const [playerState, setPlayerState] = useState({
         url: '',
         mode: '',
-        playing: false,
-        seeking: false,
+        startPlaying: false,
+        playing: !seeking && true,
         ready: false,
         muted: false,
         played: 0,
         loaded: 0,
         duration: 0,
+        startTime: 0,
         elapsedTime: 0,
         loadedTime: 0,
         playbackRate: 1.0,
         loop: false
     });
-    const [selecting, setSelecting] = useState(true);
-    const [volume, setVolume] = useState(1);
-    const [controlVisible, setControlVisible] = useState(true);
-    const [timer, setTimer] = useState(null);
-    const [roomID, setRoomID] = useState(null);
 
     const {socket} = useContext(SocketContext);
 
@@ -34,20 +38,14 @@ export const PlayerProvider = ({children}) => {
             clearTimeout(timer)
             setTimer(null)
         }
-            setControlVisible(true)
+        setControlVisible(true)
         setTimer(setTimeout(() => {
-            if(!playerState.seeking) setControlVisible(false)
-        }, 2500))
+            if(!seeking && !onControl && playerState.playing) setControlVisible(false)
+        }, 2000))
     }
 
     const setPlayPause = (isPlay) => {
         setPlayerState({...playerState, playing: isPlay})
-    }
-
-    const setProgress = (state) => {
-        if(!playerState.seeking){
-            setPlayerState({...playerState, elapsedTime: state.playedSeconds, loadedTime: state.loadedSeconds})
-        }
     }
 
     const setSeekUp = () => {
@@ -67,11 +65,11 @@ export const PlayerProvider = ({children}) => {
     }
 
     const setPlayerReady = () => {
-        setPlayerState({...playerState, ready: true})
+        setReady(true)
+        setPlayerState({...playerState, playing: playerState.startPlaying})
     }
 
     const setPlayerMode = ({url, mode, show}) => {
-        console.log("dfgksdk")
         socket.emit('set_player', {url: url, mode: mode, roomID: roomID})
         setPlayerState(playerState => ({...playerState, url: url, mode: mode}))
 
@@ -88,7 +86,6 @@ export const PlayerProvider = ({children}) => {
             setMute,
             setSeekDown,
             setSeekUp,
-            setProgress,
             setPlayPause,
             setPlayerState,
             setVolume,
@@ -96,9 +93,13 @@ export const PlayerProvider = ({children}) => {
             setPlayerMode,
             setPlayerReady,
             setRoomID,
+            setSeeking,
+            setOnControl,
             handleMouseMove,
 
+            ready,
             selecting,
+            seeking,
             playerState,
             volume,
             controlVisible,

@@ -78,7 +78,7 @@ function findUser (socket) {
 
         const user = room.users.filter((user) => socket.id in user)
 
-        return {roomID: room.roomID, owner: room.owner, username: user[0][socket.id]}
+        return {room: room, roomID: room.roomID, owner: room.owner, username: user[0][socket.id]}
     } catch (error) {
         console.log(error)
     }
@@ -130,12 +130,23 @@ io.on("connection", (socket) => {
     socket.on("set_player", ({url, mode, roomID}) => {
         try {
             const user = findUser(socket)
-            console.log(user)
             const room = rooms.find(room => room.roomID === roomID)
             if(room){
                 room.state.url = url
                 room.state.mode = mode
                 socket.to(roomID).emit("send_player", {state: room.state, username: user.username})
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    })
+
+    socket.on("handle_progress", ({elapsedTime}) => {
+        try {
+            const user = findUser(socket)
+            const room = rooms.find(room => room.roomID === user.roomID)
+            if(room){
+                room.state.elapsedTime = elapsedTime
             }
         } catch (error) {
             console.log(error)
@@ -149,6 +160,10 @@ io.on("connection", (socket) => {
     socket.on("on_play_pause", (isPlay) => {
         try {
             const user = findUser(socket)
+            const room = rooms.find(room => room.roomID === user.roomID)
+
+            room.state.playing = isPlay
+
             socket.to(user.roomID).emit("handle_play_pause", isPlay)
             socket.broadcast.to(user.roomID).emit("new_event", {username: user.username, message: isPlay ? 'played the movie' : 'paused the movie'})
         } catch (error) {
@@ -159,8 +174,25 @@ io.on("connection", (socket) => {
     socket.on("on_seek", (seekTime) => {
         try {
             const user = findUser(socket)
-            socket.to(user.roomID).emit("handle_seek", seekTime)
-            socket.to(user.roomID).emit("new_event", {username: user.username, message: `seeked to ${convertSeconds(seekTime)}`})
+            const room = rooms.find(room => room.roomID === user.roomID)
+
+            room.state.elapsedTime = seekTime
+
+            socket.to(user.roomID).emit("inform_seek")
+            // socket.to(user.roomID).emit("handle_seek", seekTime)
+            // socket.to(user.roomID).emit("new_event", {username: user.username, message: `seeked to ${convertSeconds(seekTime)}`})
+        } catch (error) {
+            console.log(error)
+        }
+    })
+
+    socket.on("seek_complete", () => {
+        try {
+            const user = findUser(socket)
+            const room = rooms.find(room => room.roomID === user.roomID)
+
+            socket.to(user.roomID).emit("handle_seek", room.state.elapsedTime)
+            socket.to(user.roomID).emit("new_event", {username: user.username, message: `seeked to ${convertSeconds(room.state.elapsedTime)}`})
         } catch (error) {
             console.log(error)
         }

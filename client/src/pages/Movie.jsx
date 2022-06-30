@@ -15,7 +15,7 @@ export default function Movie() {
     const [joined, setJoined] = useState(null);
 
     const {socket} = useContext(SocketContext);
-    const {setRoomID, setPlayerState} = useContext(PlayerContext);
+    const {setRoomID, setPlayerState, playerState, setSelecting} = useContext(PlayerContext);
     const {username} = useContext(AuthContext);
     const {setMessages} = useContext(MessageContext);
 
@@ -33,7 +33,8 @@ export default function Movie() {
                 setJoined(joined)
                 setRoomID(roomid)
                 setMessages([])
-                setPlayerState(playerState => ({...playerState, url: state.url, mode: state.mode, playing: state.playing, elapsedTime: state.elapsedTime}))
+                setSelecting(false)
+                setPlayerState(playerState => ({...playerState, url: state.url, mode: state.mode, startPlaying: state.playing, startTime: state.elapsedTime}))
             })
         }
     }, [roomid, socket])

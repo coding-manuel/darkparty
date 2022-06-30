@@ -14,6 +14,7 @@ import { MessageContext } from '../contexts/MessageContext';
 const Player = ({url, roomID}) => {
     const [allMovies, setAllMovies] = useState([]);
     const [activeTab, setActiveTab] = useState(0);
+    const [seeking, setSeeking] = useState(false);
 
     const {
         playerState,
@@ -26,6 +27,7 @@ const Player = ({url, roomID}) => {
         setPlayerReady,
         setPlayPause,
         setSelecting,
+        ready
     } = useContext(PlayerContext);
     const {socket} = useContext(SocketContext);
     const {setMessages} = useContext(MessageContext);
@@ -40,7 +42,8 @@ const Player = ({url, roomID}) => {
     }
 
     const handleProgress = (state) => {
-        if(!playerState.seeking){
+        if(!seeking){
+            socket.volatile.emit("handle_progress", {elapsedTime: state.playedSeconds})
             setPlayerState({...playerState, elapsedTime: state.playedSeconds, loadedTime: state.loadedSeconds})
         }
     }
@@ -54,18 +57,17 @@ const Player = ({url, roomID}) => {
     }
 
     const handleSeek = (seekTime) => {
-        if(!playerState.seeking){
-            playerRef.current.seekTo(seekTime, "seconds");
-        }
+        socket.emit("on_seek", seekTime)
+        playerRef.current.seekTo(seekTime, "seconds");
     }
 
-    const handleSeekUp = (seekTime) => {
-        socket.emit("on_seek", seekTime)
-        setPlayerState({...playerState, seeking: false})
+    const handleSeekUp = () => {
+        socket.emit("seek_complete")
+        setSeeking(false)
     }
 
     const handleSeekDown = () => {
-        setPlayerState({...playerState, seeking: true, playing: false})
+        setSeeking(true)
     }
 
     const handleMute = () => {
@@ -84,9 +86,10 @@ const Player = ({url, roomID}) => {
         navigate('/home')
     }
 
-    const handlePlayerReady = () => {
-        setPlayerReady()
-    }
+    // const handlePlayerReady = () => {
+    //     console.log("ready")
+    //     setPlayerReady()
+    // }
 
     const onChange = (active, tabKey) => {
         setActiveTab(active);
@@ -97,6 +100,13 @@ const Player = ({url, roomID}) => {
     }
 
     const duration = playerRef && playerRef.current ? playerRef.current.getDuration() : '00:00'
+
+    useEffect(() => {
+        if(playerRef.current){
+            playerRef.current.seekTo(playerState.startTime, "seconds");
+            setPlayPause(playerState.startPlaying)
+        }
+    }, []);
 
     useEffect(()=>{
         if(socket){
@@ -110,6 +120,7 @@ const Player = ({url, roomID}) => {
         if(socket){
             socket.on("send_player", ({state, username}) => {
                 setPlayerState(playerState => ({...playerState, url: state.url, mode: state.mode}))
+                setSelecting(false)
                 setMessages(messages => ([...messages, {username: username, message: "changed content"}]))
             })
         }
@@ -118,10 +129,19 @@ const Player = ({url, roomID}) => {
     useEffect(()=>{
         if(socket){
             socket.on("handle_seek", (seekTime) => {
-                handleSeek(seekTime);
+                playerRef.current.seekTo(seekTime, "seconds");
+                setSeeking(false)
             })
         }
-    }, [socket, playerState])
+    }, [socket, playerRef.current])
+
+    useEffect(()=>{
+        if(socket){
+            socket.on("inform_seek", () => {
+                setSeeking(true)
+            })
+        }
+    }, [socket])
 
     useEffect(()=>{
         setPlayerState({...playerState, duration: duration})
@@ -141,10 +161,10 @@ const Player = ({url, roomID}) => {
 
     return (
         <Box onMouseMove={onMouseMove} sx={{backgroundColor: '#000', position: 'relative', flexGrow: 2}}>
-            {selecting ?
-            <Box sx={{width: '100%', position: 'relative'}}>
-                {playerState.url !== '' && <ActionIcon sx={{position: 'absolute', right: 30}} onClick={handleCloseClick}><X size={16} weight="fill" /></ActionIcon>}
-                <Tabs active={activeTab} onTabChange={onChange} position='center' variant="pills" m={16} sx={{height: '100%'}}>
+            {selecting &&
+            <Box sx={{width: '100%', position: 'relative', zIndex: 90000, backdropFilter: 'blur(3px)'}}>
+                {playerState.url !== '' && <ActionIcon sx={{position: 'absolute', right: 30, top: 16}} onClick={handleCloseClick}><X size={16} weight="fill" /></ActionIcon>}
+                <Tabs active={activeTab} onTabChange={onChange} position='center' variant="pills" p={16} sx={{height: '100%'}}>
                     <Tabs.Tab label="Movies">
                         <Stack>
                             <ScrollArea scrollbarSize={4} sx={{height: '85vh'}}>
@@ -178,7 +198,7 @@ const Player = ({url, roomID}) => {
                         </Stack>
                     </Tabs.Tab>
                 </Tabs>
-            </Box> :
+            </Box>}
             <>
                 <Group spacing={24} sx={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 100, transition: 'opacity .2s ease-out', opacity: !controlVisible ? 0 : 1}}>
                     <Rewind size={32} weight="fill" cursor='pointer' onClick={handleSeekBack} />
@@ -196,14 +216,12 @@ const Player = ({url, roomID}) => {
                     height='100%'
                     width='100%'
 
-                    playing={playerState.playing}
+                    playing={!seeking ? playerState.playing : false}
                     controls={false}
                     volume={volume}
                     muted={playerState.muted}
 
                     onProgress={handleProgress}
-                    onSeek={handleSeekUp}
-                    onReady={handlePlayerReady}
                 />
                 <PlayerControls
                     muted={playerState.muted}
@@ -215,13 +233,13 @@ const Player = ({url, roomID}) => {
                     loadedTime={playerState.loadedTime}
 
                     onPlayPause={handlePlayPause}
+                    onSeekUp={handleSeekUp}
                     onSeek={handleSeek}
                     onSeekDown={handleSeekDown}
                     onMute={handleMute}
                     onVolumeChange={handleVolumeChange}
                 />
             </>
-            }
         </Box>
     );
 }
