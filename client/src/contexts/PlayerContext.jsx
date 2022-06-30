@@ -7,8 +7,8 @@ export const PlayerContext = React.createContext()
 
 export const PlayerProvider = ({children}) => {
     const [playerState, setPlayerState] = useState({
-        url: null,
-        mode: null,
+        url: '',
+        mode: '',
         playing: false,
         seeking: false,
         ready: false,
@@ -70,12 +70,8 @@ export const PlayerProvider = ({children}) => {
         setPlayerState({...playerState, ready: true})
     }
 
-    const setPlayerInit = (state) => {
-        console.log(state)
-        // setPlayerState({...playerState, playing})
-    }
-
     const setPlayerMode = ({url, mode, show}) => {
+        console.log("dfgksdk")
         socket.emit('set_player', {url: url, mode: mode, roomID: roomID})
         setPlayerState(playerState => ({...playerState, url: url, mode: mode}))
 
@@ -96,7 +92,6 @@ export const PlayerProvider = ({children}) => {
             setPlayPause,
             setPlayerState,
             setVolume,
-            setPlayerInit,
             setSelecting,
             setPlayerMode,
             setPlayerReady,

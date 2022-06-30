@@ -129,11 +129,13 @@ io.on("connection", (socket) => {
 
     socket.on("set_player", ({url, mode, roomID}) => {
         try {
+            const user = findUser(socket)
+            console.log(user)
             const room = rooms.find(room => room.roomID === roomID)
             if(room){
                 room.state.url = url
                 room.state.mode = mode
-                socket.to(roomID).emit("send_player", {state: room.state})
+                socket.to(roomID).emit("send_player", {state: room.state, username: user.username})
             }
         } catch (error) {
             console.log(error)

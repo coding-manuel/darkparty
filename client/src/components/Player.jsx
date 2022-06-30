@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { SocketContext } from '../contexts/SocketContext';
 import { axios } from '../utils/axios';
 import MovieThumb from './MovieThumb';
+import { MessageContext } from '../contexts/MessageContext';
 
 const Player = ({url, roomID}) => {
     const [allMovies, setAllMovies] = useState([]);
@@ -27,6 +28,7 @@ const Player = ({url, roomID}) => {
         setSelecting,
     } = useContext(PlayerContext);
     const {socket} = useContext(SocketContext);
+    const {setMessages} = useContext(MessageContext);
 
     const navigate = useNavigate()
 
@@ -106,12 +108,12 @@ const Player = ({url, roomID}) => {
 
     useEffect(()=>{
         if(socket){
-            socket.on("send_player", ({state}) => {
+            socket.on("send_player", ({state, username}) => {
                 setPlayerState(playerState => ({...playerState, url: state.url, mode: state.mode}))
-
+                setMessages(messages => ([...messages, {username: username, message: "changed content"}]))
             })
         }
-    }, [socket, playerState])
+    }, [socket])
 
     useEffect(()=>{
         if(socket){
@@ -141,7 +143,7 @@ const Player = ({url, roomID}) => {
         <Box onMouseMove={onMouseMove} sx={{backgroundColor: '#000', position: 'relative', flexGrow: 2}}>
             {selecting ?
             <Box sx={{width: '100%', position: 'relative'}}>
-                {playerState.url !== null && <ActionIcon sx={{position: 'absolute', right: 30}} onClick={handleCloseClick}><X size={16} weight="fill" /></ActionIcon>}
+                {playerState.url !== '' && <ActionIcon sx={{position: 'absolute', right: 30}} onClick={handleCloseClick}><X size={16} weight="fill" /></ActionIcon>}
                 <Tabs active={activeTab} onTabChange={onChange} position='center' variant="pills" m={16} sx={{height: '100%'}}>
                     <Tabs.Tab label="Movies">
                         <Stack>
