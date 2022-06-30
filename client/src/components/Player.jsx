@@ -132,7 +132,7 @@ const Player = ({url, roomID}) => {
         <Box onMouseMove={onMouseMove} sx={{backgroundColor: '#000', position: 'relative', flexGrow: 2}}>
             {selecting ?
             <Box sx={{width: '100%', position: 'relative'}}>
-                <ActionIcon sx={{position: 'absolute', right: 30}} onClick={handleCloseClick}><X size={16} weight="fill" /></ActionIcon>
+                {playerState.url !== null && <ActionIcon sx={{position: 'absolute', right: 30}} onClick={handleCloseClick}><X size={16} weight="fill" /></ActionIcon>}
                 <Tabs active={activeTab} onTabChange={onChange} position='center' variant="pills" m={16} sx={{height: '100%'}}>
                     <Tabs.Tab label="Movies">
                         <Stack>
@@ -179,7 +179,7 @@ const Player = ({url, roomID}) => {
                     <Text>Back</Text>
                 </Group>
                 <ReactPlayer
-                    url={"https://d15jncv4xxvixg.cloudfront.net/l4l2q6610.uofdezfuo5d.mp4.mp4"}
+                    url={playerState.url}
                     ref={playerRef}
                     style={{position: 'absolute'}}
                     height='100%'

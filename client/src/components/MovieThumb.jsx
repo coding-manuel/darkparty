@@ -4,11 +4,13 @@ import { useNavigate } from 'react-router-dom'
 
 import {SocketContext} from "../contexts/SocketContext"
 import { AuthContext } from '../contexts/AuthContext'
+import { PlayerContext } from '../contexts/PlayerContext'
 
 export default function MovieThumb({movie}) {
     const navigate = useNavigate()
     const {username} = useContext(AuthContext);
     const {socket} = useContext(SocketContext);
+    const {setPlayerState} = useContext(PlayerContext);
 
     // const handleClick = () => {
     //     socket.emit("create_room", movie.id, username)
@@ -18,10 +20,7 @@ export default function MovieThumb({movie}) {
     // }
 
     const handleClick = () => {
-        socket.emit("create_room", movie.id, username)
-        socket.on("send_roomID", ({roomID}) => {
-            navigate(`/movie/${movie.id}/party/${roomID}`)
-        })
+        setPlayerState(playerState => ({...playerState, url: movie.movieurl}))
     }
 
     return (

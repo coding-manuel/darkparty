@@ -5,6 +5,7 @@ export const PlayerContext = React.createContext()
 export const PlayerProvider = ({children}) => {
     const [playerState, setPlayerState] = useState({
         url: null,
+        mode: null,
         playing: false,
         seeking: false,
         ready: false,
