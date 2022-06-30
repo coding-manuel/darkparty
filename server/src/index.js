@@ -98,13 +98,13 @@ function convertSeconds(seconds) {
 }
 
 io.on("connection", (socket) => {
-    socket.on("create_room", (movieID) => {
+    socket.on("create_room", () => {
         const roomID = uuidv4()
-        rooms.push({roomID: roomID, movieID: movieID, state: {playing: false, elapsedTime: 0}, users: []})
+        rooms.push({roomID: roomID, state: {url: "", mode: "", playing: false, elapsedTime: 0}, users: []})
         socket.emit("send_roomID", {roomID: roomID})
     })
 
-    socket.on("join_room", ({roomID, username, movieID}, callback) => {
+    socket.on("join_room", ({roomID, username}, callback) => {
         try {
             const room = rooms.find(room => room.roomID === roomID)
             if(room){
@@ -123,6 +123,19 @@ io.on("connection", (socket) => {
             }
         }
         catch(error){
+            console.log(error)
+        }
+    })
+
+    socket.on("set_player", ({url, mode, roomID}) => {
+        try {
+            const room = rooms.find(room => room.roomID === roomID)
+            if(room){
+                room.state.url = url
+                room.state.mode = mode
+                socket.to(roomID).emit("send_player", {state: room.state})
+            }
+        } catch (error) {
             console.log(error)
         }
     })

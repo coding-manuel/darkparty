@@ -106,6 +106,14 @@ const Player = ({url, roomID}) => {
 
     useEffect(()=>{
         if(socket){
+            socket.on("send_player", ({state}) => {
+                setPlayerState(playerState => ({...playerState, url: state.url, mode: state.mode}))
+            })
+        }
+    }, [socket, playerState])
+
+    useEffect(()=>{
+        if(socket){
             socket.on("handle_seek", (seekTime) => {
                 handleSeek(seekTime);
             })

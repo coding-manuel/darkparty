@@ -66,21 +66,21 @@ function App() {
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider theme={theme} styles={globalStyles} withGlobalStyles withNormalizeCSS>
         <NotificationsProvider>
-          <AuthProvider>
-            <PlayerProvider>
-              <SocketProvider>
-                <Routes>
-                    <Route path='/home' element={<RequireAuth><Layout><Home /></Layout></RequireAuth>} />
-                    <Route path='/upload' element={<RequireAuth><Layout><Upload /></Layout></RequireAuth>} />
-                    <Route path='/room/:roomid' element={<RequireAuth><Movie /></RequireAuth>} />
-                    <Route path='/movie/:id/party/:roomid' element={<RequireAuth><Movie /></RequireAuth>} />
-                    <Route path='/chicken' element={<RequireAuth><Home/></RequireAuth>} />
-                    <Route path='/auth' element={<Auth />} />
-                    <Route path='*' element={<Navigate to='/home' />} />
-                </Routes>
-              </SocketProvider>
-            </PlayerProvider>
-          </AuthProvider>
+          <SocketProvider>
+            <AuthProvider>
+              <PlayerProvider>
+                  <Routes>
+                      <Route path='/home' element={<RequireAuth><Layout><Home /></Layout></RequireAuth>} />
+                      <Route path='/upload' element={<RequireAuth><Layout><Upload /></Layout></RequireAuth>} />
+                      <Route path='/room/:roomid' element={<RequireAuth><Movie /></RequireAuth>} />
+                      <Route path='/movie/:id/party/:roomid' element={<RequireAuth><Movie /></RequireAuth>} />
+                      <Route path='/chicken' element={<RequireAuth><Home/></RequireAuth>} />
+                      <Route path='/auth' element={<Auth />} />
+                      <Route path='*' element={<Navigate to='/home' />} />
+                  </Routes>
+              </PlayerProvider>
+            </AuthProvider>
+          </SocketProvider>
         </NotificationsProvider>
       </MantineProvider>
     </ColorSchemeProvider>

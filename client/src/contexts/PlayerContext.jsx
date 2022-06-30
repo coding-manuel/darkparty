@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from "react"
+import { showNotification } from "@mantine/notifications";
+import React, { useState, useEffect, useContext } from "react"
+import { notificationStyles } from "../globalStyles";
+import { SocketContext } from "./SocketContext";
 
 export const PlayerContext = React.createContext()
 
@@ -22,6 +25,9 @@ export const PlayerProvider = ({children}) => {
     const [volume, setVolume] = useState(1);
     const [controlVisible, setControlVisible] = useState(true);
     const [timer, setTimer] = useState(null);
+    const [roomID, setRoomID] = useState(null);
+
+    const {socket} = useContext(SocketContext);
 
     const handleMouseMove = () => {
         if(timer){
@@ -69,6 +75,17 @@ export const PlayerProvider = ({children}) => {
         // setPlayerState({...playerState, playing})
     }
 
+    const setPlayerMode = ({url, mode, show}) => {
+        socket.emit('set_player', {url: url, mode: mode, roomID: roomID})
+        setPlayerState(playerState => ({...playerState, url: url, mode: mode}))
+
+        show && showNotification({
+            title: 'Added to the player',
+            styles: notificationStyles
+        })
+        setSelecting(false)
+    }
+
     return(
         <PlayerContext.Provider value={{
             setVolumeChange,
@@ -81,7 +98,9 @@ export const PlayerProvider = ({children}) => {
             setVolume,
             setPlayerInit,
             setSelecting,
+            setPlayerMode,
             setPlayerReady,
+            setRoomID,
             handleMouseMove,
 
             selecting,

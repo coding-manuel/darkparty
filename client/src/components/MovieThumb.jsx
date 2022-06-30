@@ -10,7 +10,7 @@ export default function MovieThumb({movie}) {
     const navigate = useNavigate()
     const {username} = useContext(AuthContext);
     const {socket} = useContext(SocketContext);
-    const {setPlayerState} = useContext(PlayerContext);
+    const {setPlayerMode} = useContext(PlayerContext);
 
     // const handleClick = () => {
     //     socket.emit("create_room", movie.id, username)
@@ -20,7 +20,7 @@ export default function MovieThumb({movie}) {
     // }
 
     const handleClick = () => {
-        setPlayerState(playerState => ({...playerState, url: movie.movieurl}))
+        setPlayerMode({url: movie.movieurl, mode: 'movie', show: true})
     }
 
     return (
