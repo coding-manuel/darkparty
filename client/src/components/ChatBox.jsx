@@ -56,7 +56,7 @@ const ChatBox = ({roomID, movieID, username}) => {
     const {socket} = useContext(SocketContext);
 
     const handleShareLink = () => {
-        navigator.clipboard.writeText(`http://localhost:3000/movie/${movieID}/party/${roomID}`)
+        navigator.clipboard.writeText(`http://localhost:3000/room/${roomID}`)
         showNotification({
             title: 'Link to party copied',
             styles: notificationStyles
